@@ -30,9 +30,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import com.leoevg.maftimer.customUI.CustomCircle
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import com.leoevg.maftimer.customUI.PlayerContainer
 
 @Composable
