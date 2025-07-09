@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import com.leoevg.maftimer.customUI.PlayerContainer
 
 @Composable
 fun TimerScreen(
@@ -84,7 +85,6 @@ fun TimerScreen(
         ){
 
         }
-
         // Блок для плеера
         Column(
             modifier = Modifier
@@ -94,11 +94,16 @@ fun TimerScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Три маленьких кружочка сверху
-            Row() {
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
                 Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Gray))
                 Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.White))
                 Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Gray))
             }
+            PlayerContainer()
         }
     }
 }
