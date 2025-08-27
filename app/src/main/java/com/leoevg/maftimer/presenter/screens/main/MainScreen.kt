@@ -36,26 +36,46 @@ import com.leoevg.maftimer.presenter.ui.PlayerContainer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import com.leoevg.maftimer.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
     mainScreenViewModel: MainScreenViewModel = MainScreenViewModel()
 ) {
-
-
     MainScreenContent()
 }
 
 @Composable
 private fun MainScreenContent(
 ) {
+
     // Извлекаем высоту экрана в Dp
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
     // Определяем цвета для градиента
     val topGradientColor = Color(0xFF3B3736) // Более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // Более темный оттенок (снизу)
+
+    var seconds by remember { mutableStateOf(0) } // 0..60
+    var isRunning by remember { mutableStateOf(false) } // Запущен ли таймер
+
+    LaunchedEffect(key1 = isRunning) {
+        if (isRunning) {
+            while (seconds < 59) {
+                delay(1000) // "усыпляет" текущую корутину не блокируя поток
+                seconds += 1
+            }
+            isRunning = false
+        }
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -98,8 +118,8 @@ private fun MainScreenContent(
                         diameterFraction = 1f
                     )
                     ProgressBar(
-                        percentage = 0.65f,
-                        number = 100,
+                        percentage = seconds / 60f, // сектор от 60
+                        number = 60,                // текст внутри = seconds
                         color = Color.Green,
                         strokeWidth = 12.dp
                     )
@@ -110,7 +130,7 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .padding(start = 25.dp),
                         onClick = {
-
+                            if (!isRunning && seconds < 60) isRunning = true
                         },
                     ) {
                         Icon(

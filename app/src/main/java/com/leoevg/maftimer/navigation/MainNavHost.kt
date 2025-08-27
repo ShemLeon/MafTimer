@@ -17,9 +17,9 @@ fun MainNavHost(modifier: Modifier) {
         startDestination = NavigationPaths.TimerSealed
     ){
         composable<NavigationPaths.TimerSealed> {
-            MainScreen { path ->
-                navController.navigate(path)
-            }
+            MainScreen(
+                navigate = { path -> navController.navigate(path) }
+            )
         }
 
         composable<NavigationPaths.SettingsSealed> {
