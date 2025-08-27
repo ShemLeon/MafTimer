@@ -4,9 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +29,7 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun CircularProgressBar(
+fun ProgressBar(
     percentage: Float,          // Процент заполнения (0.0 - 1.0)
     number: Int,                // Число для отображения
     fontSize: TextUnit = 28.sp,
@@ -88,13 +86,16 @@ fun CircularProgressBar(
                 startAngle = -90f,
                 sweepAngle = 360 * curPercentage.value,
                 useCenter = false,
-                style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round),
+                style = Stroke(width = strokeWidthPx, cap = StrokeCap.Butt),
                 topLeft = Offset(centerX - radiusPx, centerY - radiusPx),
                 size = Size(radiusPx * 2, radiusPx * 2)
             )
         }
 
         Text(
+            modifier = Modifier
+                .padding(top = 200.dp)
+                .align(Alignment.Center),
             text = (curPercentage.value * number).toInt().toString(),
             color = Color.Black,
             fontSize = fontSize,
@@ -106,7 +107,7 @@ fun CircularProgressBar(
 @Composable
 @Preview(showBackground = true)
 fun CircularProgressBarPreview() {
-    CircularProgressBar(
+    ProgressBar(
         percentage = 0.75f,
         number = 100,
         color = Color.Green,
