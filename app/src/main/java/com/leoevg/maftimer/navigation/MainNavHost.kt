@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.leoevg.maftimer.screens.settings.SettingsScreen
-import com.leoevg.maftimer.screens.timer.TimerScreen
+import com.leoevg.maftimer.presenter.screens.settings.SettingsScreen
+import com.leoevg.maftimer.presenter.screens.main.MainScreen
 
 @Composable
 fun MainNavHost(modifier: Modifier) {
@@ -17,10 +17,11 @@ fun MainNavHost(modifier: Modifier) {
         startDestination = NavigationPaths.TimerSealed
     ){
         composable<NavigationPaths.TimerSealed> {
-            TimerScreen { path ->
+            MainScreen { path ->
                 navController.navigate(path)
             }
         }
+
         composable<NavigationPaths.SettingsSealed> {
                 SettingsScreen()
             }
