@@ -39,25 +39,7 @@ fun ProgressBar(
     animDuration: Int = 1000,   // Длительность анимации (мс)
     animDelay: Int = 0           // Задержка перед анимацией (мс)
 ) {
-    // Переменная для отслеживания, была ли уже запущена анимация
-    // remember сохраняет значение между перекомпозициями
-    var animationPlayed by remember {
-        mutableStateOf(false)
-    }
-    // animateFloatAsState создает анимированное значение,
-    // начинает с 0 и анимируется до percentage
-    // Использует tween для плавной анимации
-    val curPercentage = animateFloatAsState(
-        targetValue = if (animationPlayed) percentage else 0f,
-        animationSpec = tween(
-            durationMillis = animDuration,
-            delayMillis = animDelay
-        )
-    )
-    // LaunchedEffect запускается один раз при первом рендере
-    LaunchedEffect(key1 = true) {
-        animationPlayed = true
-    }
+    val curPercentage = percentage
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -84,7 +66,7 @@ fun ProgressBar(
             drawArc(
                 color = color,
                 startAngle = -90f,
-                sweepAngle = 360 * curPercentage.value,
+                sweepAngle = 360 * curPercentage,
                 useCenter = false,
                 style = Stroke(width = strokeWidthPx, cap = StrokeCap.Butt),
                 topLeft = Offset(centerX - radiusPx, centerY - radiusPx),
@@ -96,7 +78,7 @@ fun ProgressBar(
             modifier = Modifier
                 .padding(top = 200.dp)
                 .align(Alignment.Center),
-            text = (curPercentage.value * number).toInt().toString(),
+            text = (curPercentage * number).toInt().toString(),
             color = Color.Black,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
