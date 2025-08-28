@@ -18,7 +18,6 @@ fun HideSystemBars() {
 
         // Прячем и статус-бар, и навигационную панель
         insetsController.hide(WindowInsetsCompat.Type.systemBars())
-
         // Устанавливаем поведение: системные панели появятся по свайпу от края
         // и скроются обратно через короткое время
         insetsController.systemBarsBehavior =

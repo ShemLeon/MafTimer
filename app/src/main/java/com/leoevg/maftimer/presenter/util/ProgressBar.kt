@@ -1,18 +1,11 @@
-package com.leoevg.maftimer.presenter.ui
+package com.leoevg.maftimer.presenter.util
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -53,7 +46,8 @@ fun ProgressBar(
 
             // Фоновый круг
             drawArc(
-                color = Color.LightGray,
+//                color = Color.LightGray,
+                color = if (curPercentage >= (50f / 60f)) Color(0xFFFF3B30) else Color.LightGray,
                 startAngle = -90f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -66,7 +60,7 @@ fun ProgressBar(
             drawArc(
                 color = color,
                 startAngle = -90f,
-                sweepAngle = 360 * curPercentage,
+                sweepAngle = -360 * curPercentage,
                 useCenter = false,
                 style = Stroke(width = strokeWidthPx, cap = StrokeCap.Butt),
                 topLeft = Offset(centerX - radiusPx, centerY - radiusPx),
@@ -78,7 +72,7 @@ fun ProgressBar(
             modifier = Modifier
                 .padding(top = 200.dp)
                 .align(Alignment.Center),
-            text = (curPercentage * number).toInt().toString(),
+            text = (number - (curPercentage * number)).toInt().toString(),
             color = Color.Black,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold

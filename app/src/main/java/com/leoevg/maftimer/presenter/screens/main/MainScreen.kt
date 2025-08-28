@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.leoevg.maftimer.presenter.ui.ProgressBar
+import com.leoevg.maftimer.presenter.util.ProgressBar
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -21,19 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoevg.maftimer.navigation.NavigationPaths
 import androidx.compose.ui.platform.LocalConfiguration
-import com.leoevg.maftimer.presenter.ui.CustomCircle
+import com.leoevg.maftimer.presenter.util.CustomCircle
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
-import com.leoevg.maftimer.presenter.ui.Indicators
-import com.leoevg.maftimer.presenter.ui.PlayerContainer
+import com.leoevg.maftimer.presenter.util.Indicators
+import com.leoevg.maftimer.presenter.util.PlayerContainer
 import com.leoevg.maftimer.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.leoevg.maftimer.presenter.util.DialDivider
 
 @Composable
 fun MainScreen(
@@ -41,20 +41,18 @@ fun MainScreen(
 ) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
     val progress by viewModel.progressFraction.collectAsState()
+
     MainScreenContent(
         progress = progress,
-        onStartClick = {
-            viewModel.onEvent(MainScreenEvent.OnBtnTimerStartClick)
-        }
+        onEvent = viewModel::onEvent
     )
 }
 
 @Composable
 private fun MainScreenContent(
     progress: Float,
-    onStartClick: () -> Unit
+    onEvent: (MainScreenEvent) -> Unit
 ) {
-
     // Извлекаем высоту экрана в Dp
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
@@ -67,7 +65,10 @@ private fun MainScreenContent(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(topGradientColor, bottomGradientColor)
+                    colors = listOf(
+                        topGradientColor,
+                        bottomGradientColor
+                    )
                 )
             )
             .padding(5.dp)
@@ -105,7 +106,7 @@ private fun MainScreenContent(
                     )
                     ProgressBar(
                         percentage = progress, // сектор от 60
-                        number = 60,                // текст внутри = seconds
+                        number = 60,           // текст внутри = seconds
                         color = Color.Green,
                         strokeWidth = 12.dp
                     )
@@ -116,7 +117,7 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .padding(start = 25.dp),
                         onClick = {
-                            onStartClick()
+                            onEvent(MainScreenEvent.OnBtnTimerStartClick)
                         },
                     ) {
                         Icon(
@@ -127,6 +128,11 @@ private fun MainScreenContent(
                                 .fillMaxSize(0.45f),
                         )
                     }
+                    // Разделители
+                    DialDivider(angleDegrees = 0, color = Color(0x80000000))
+                    DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))
+                    DialDivider(angleDegrees = 60, color = Color(0x80fc520d))
+
                 }
             }
         }
@@ -150,5 +156,8 @@ private fun MainScreenContent(
 @Preview(showBackground = true)
 @Composable
 fun TimerScreenPreview() {
-    MainScreenContent(progress = 0.3f, onStartClick = {})
+    MainScreenContent(
+        progress = 0.3f,
+        onEvent = { it -> }
+    )
 }

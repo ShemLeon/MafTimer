@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.ui
+package com.leoevg.maftimer.presenter.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
