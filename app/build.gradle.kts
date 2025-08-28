@@ -1,9 +1,12 @@
 plugins {
+    alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
+
 
 android {
     namespace = "com.leoevg.maftimer"
@@ -41,8 +44,24 @@ android {
 }
 
 dependencies {
+    // Dagger Hilt
+    implementation(libs.dagger.hilt)
+    implementation(libs.hilt.navigation.compose)
+    ksp(libs.dagger.hilt.compiler)
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    // ViewModel
+    implementation(libs.lifecycle.viewmodel.compose)
+
+    // Navigation
+    implementation(libs.navigation.compose)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -50,8 +69,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.compose)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

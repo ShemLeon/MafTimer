@@ -9,8 +9,9 @@ import androidx.compose.ui.Modifier
 import com.leoevg.maftimer.navigation.MainNavHost
 import com.leoevg.maftimer.ui.theme.MafTimerTheme
 import com.leoevg.maftimer.presenter.util.HideSystemBars
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

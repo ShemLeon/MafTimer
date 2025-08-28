@@ -38,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit
 ) {
+
     val viewModel: MainScreenViewModel = viewModel()
     val progress by viewModel.progressFraction.collectAsState()
     MainScreenContent(
@@ -53,6 +54,7 @@ private fun MainScreenContent(
     progress: Float,
     onStartClick: () -> Unit
 ) {
+
     // Извлекаем высоту экрана в Dp
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
