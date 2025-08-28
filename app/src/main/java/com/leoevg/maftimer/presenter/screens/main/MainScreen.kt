@@ -43,42 +43,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
     mainScreenViewModel: MainScreenViewModel = MainScreenViewModel()
 ) {
-    MainScreenContent()
+    val vm: MainScreenViewModel = viewModel()
+    val progress by vm.progressFraction.collectAsState()
+    MainScreenContent(
+        progress = progress,
+        onStartClick = { vm.onEvent(MainScreenEvent.OnBtnTimerStartClick) }
+    )
 }
 
 @Composable
 private fun MainScreenContent(
+    progress: Float,
+    onStartClick: () -> Unit
 ) {
-
     // Извлекаем высоту экрана в Dp
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
     // Определяем цвета для градиента
     val topGradientColor = Color(0xFF3B3736) // Более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // Более темный оттенок (снизу)
-
-    val progress = remember { Animatable(0f) }   // 0..60
-    val scope = rememberCoroutineScope()
-    var isRunning by remember { mutableStateOf(false) } // Запущен ли таймер
-
-//    LaunchedEffect(isRunning) {
-//        if (isRunning) {
-//            val remainingMs = ((1f - progress.value) * 60_000).toInt()
-//            if (remainingMs > 0) {
-//                progress.animateTo(
-//                    targetValue = 1f,
-//                    animationSpec = tween(durationMillis = remainingMs)
-//                )
-//            }
-//            isRunning = false
-//        }
-//    }
 
     Box(
         modifier = Modifier
@@ -122,7 +115,7 @@ private fun MainScreenContent(
                         diameterFraction = 1f
                     )
                     ProgressBar(
-                        percentage = progress.value, // сектор от 60
+                        percentage = progress, // сектор от 60
                         number = 60,                // текст внутри = seconds
                         color = Color.Green,
                         strokeWidth = 12.dp
@@ -134,18 +127,7 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .padding(start = 25.dp),
                         onClick = {
-                            if (progress.value < 1f) {
-                                val remainingMs = ((1f - progress.value) * 60_000).toInt()
-                                scope.launch {
-                                    progress.animateTo(
-                                        targetValue = 1f,
-                                        animationSpec = tween(
-                                            durationMillis = remainingMs,
-                                            easing = LinearEasing    // было без easing → по умолчанию ease-out
-                                        )
-                                    )
-                                }
-                            }
+                            onStartClick()
                         },
                     ) {
                         Icon(
@@ -176,8 +158,8 @@ private fun MainScreenContent(
 }
 
 
-@Composable
 @Preview(showBackground = true)
+@Composable
 fun TimerScreenPreview() {
-    MainScreenContent()
+    MainScreenContent(progress = 0.3f, onStartClick = {})
 }
