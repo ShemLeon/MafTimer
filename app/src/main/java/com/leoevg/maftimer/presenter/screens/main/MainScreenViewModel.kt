@@ -4,12 +4,15 @@ package com.leoevg.maftimer.presenter.screens.main
 import androidx.lifecycle.ViewModel
 import android.os.SystemClock
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class MainScreenViewModel : ViewModel() {
+@HiltViewModel
+class MainScreenViewModel @Inject constructor() : ViewModel() {
     private val _progressFraction = MutableStateFlow(0f) // 0f..1f
     val progressFraction: StateFlow<Float> = _progressFraction.asStateFlow()
     private var timerJob: Job? = null // корутина

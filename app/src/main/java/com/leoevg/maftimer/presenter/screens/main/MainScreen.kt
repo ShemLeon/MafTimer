@@ -32,14 +32,14 @@ import com.leoevg.maftimer.presenter.ui.PlayerContainer
 import com.leoevg.maftimer.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit
 ) {
-
-    val viewModel: MainScreenViewModel = viewModel()
+    val viewModel = hiltViewModel<MainScreenViewModel>()
     val progress by viewModel.progressFraction.collectAsState()
     MainScreenContent(
         progress = progress,
