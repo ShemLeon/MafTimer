@@ -1,6 +1,5 @@
 package com.leoevg.maftimer.presenter.screens.main
 
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,40 +23,28 @@ import com.leoevg.maftimer.navigation.NavigationPaths
 import androidx.compose.ui.platform.LocalConfiguration
 import com.leoevg.maftimer.presenter.ui.CustomCircle
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import com.leoevg.maftimer.presenter.ui.Indicators
 import com.leoevg.maftimer.presenter.ui.PlayerContainer
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
-import androidx.compose.runtime.*
 import com.leoevg.maftimer.R
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.delay
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 
 @Composable
 fun MainScreen(
-    navigate: (NavigationPaths) -> Unit,
-    mainScreenViewModel: MainScreenViewModel = MainScreenViewModel()
+    navigate: (NavigationPaths) -> Unit
 ) {
-    val vm: MainScreenViewModel = viewModel()
-    val progress by vm.progressFraction.collectAsState()
+    val viewModel: MainScreenViewModel = viewModel()
+    val progress by viewModel.progressFraction.collectAsState()
     MainScreenContent(
         progress = progress,
-        onStartClick = { vm.onEvent(MainScreenEvent.OnBtnTimerStartClick) }
+        onStartClick = {
+            viewModel.onEvent(MainScreenEvent.OnBtnTimerStartClick)
+        }
     )
 }
 
