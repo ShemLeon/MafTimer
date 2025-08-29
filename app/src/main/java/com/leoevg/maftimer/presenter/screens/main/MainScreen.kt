@@ -128,6 +128,7 @@ private fun MainScreenContent(
                                 // Если таймер работает - сбрасываем
                                 onEvent(MainScreenEvent.OnBtnTimerResetClick)
                             }else if (state.isPaused){
+
                                 //Todo: сделать функционал на паузе
                             }else {
                                 // Если таймер остановлен - запускаем

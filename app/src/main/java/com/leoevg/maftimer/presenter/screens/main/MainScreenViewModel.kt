@@ -48,7 +48,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
                     progressFraction = startFraction + t * (1f - startFraction)
                 )
                 if (now >= end) break
-                delay(16) // ~60 FPS
+                delay(8) // ~60 FPS
             }
             // Устанавливаем isRunning = false когда таймер завершен
             _state.value = _state.value.copy(isRunning = false)
@@ -64,7 +64,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             startTimer() // Продолжаем с текущей позиции
         }
     }
-    
+
     private fun stopTimer() {
         timerJob?.cancel()
         timerJob = null
