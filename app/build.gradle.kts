@@ -44,6 +44,11 @@ android {
 }
 
 dependencies {
+
+
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.13.1")
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.navigation.compose)

@@ -18,6 +18,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     val state: StateFlow<MainScreenState> = _state.asStateFlow()
 
     fun onEvent(event: MainScreenEvent) {
+
         when (event) {
             is MainScreenEvent.OnBtnTimerStartClick -> startTimer()
             is MainScreenEvent.OnBtnTimerStopClick -> stopTimer()
@@ -28,6 +29,8 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun startTimer() {
+  //    android.util.Log.d("GsonTest", com.leoevg.maftimer.presenter.util.GsonTest.testGson())
+
         if (timerJob?.isActive == true) return
         if (_state.value.isFinished){
             _state.value = _state.value.copy(progressFraction = 0f, isPaused = false)
