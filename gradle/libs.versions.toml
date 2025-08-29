@@ -1,5 +1,8 @@
 [versions]
+appRemote = "0.8.0"
+auth = "2.1.2"
 daggerHilt = "2.57"
+gson = "2.13.1"
 hiltNavigationCompose = "1.2.0"
 
 ksp = "2.0.21-1.0.26"
@@ -20,8 +23,11 @@ composeBom = "2025.08.00"
 
 [libraries]
 # Dagger Hilt
+app-remote = { module = "com.spotify.android:app-remote", version.ref = "appRemote" }
+auth = { module = "com.spotify.android:auth", version.ref = "auth" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHilt" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 # ViewModel

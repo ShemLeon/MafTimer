@@ -44,11 +44,11 @@ android {
 }
 
 dependencies {
-
-
-
+    implementation(libs.auth)
+    implementation(libs.app.remote)
     // Gson
-    implementation("com.google.code.gson:gson:2.13.1")
+    implementation(libs.gson)
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.navigation.compose)
