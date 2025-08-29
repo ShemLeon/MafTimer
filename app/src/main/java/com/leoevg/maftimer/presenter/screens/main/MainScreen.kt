@@ -115,40 +115,32 @@ private fun MainScreenContent(
                         animDuration = 100, // 10 секунд.
                         strokeWidth = 12.dp
                     )
-                    IconButton(
+                    // ───── вместо IconButton { … } ─────
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize(1f)
+                            .fillMaxSize()
                             .align(Alignment.Center)
-                            .padding(
-                                start = if (state.isRunning) 0.dp else 25.dp
-                            )
-                            .pointerInput(Unit) {
+                            .pointerInput(state.isRunning, state.isPaused, state.isFinished) {
                                 detectTapGestures(
                                     onLongPress = {
-                                        // Долгое нажатие - ставим на паузу (только если таймер работает)
                                         if (state.isRunning) {
                                             onEvent(MainScreenEvent.OnBtnTimerPauseClick)
+                                        }
+                                    },
+                                    onTap = {
+                                        when {
+                                            state.isFinished -> {
+                                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
+                                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
+                                            }
+                                            state.isRunning -> onEvent(MainScreenEvent.OnBtnTimerResetClick)
+                                            state.isPaused  -> onEvent(MainScreenEvent.OnBtnTimerResumeClick)
+                                            else            -> onEvent(MainScreenEvent.OnBtnTimerStartClick)
                                         }
                                     }
                                 )
                             },
-                        onClick = {
-                            // Обычное нажатие
-                            if (state.isFinished) {
-                                // Если таймер завершен - запускаем заново
-                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
-                            } else if (state.isRunning) {
-                                // Если таймер работает - сбрасываем
-                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                            } else if (state.isPaused) {
-                                // Если на паузе - возобновляем
-                                onEvent(MainScreenEvent.OnBtnTimerResumeClick)
-                            } else {
-                                // Если таймер остановлен - запускаем
-                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
-                            }
-                        }
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(
@@ -156,9 +148,10 @@ private fun MainScreenContent(
                             ),
                             contentDescription = if (state.isRunning) "Renew" else "Start",
                             tint = Color.Black,
-                            modifier = Modifier.fillMaxSize(0.45f),
+                            modifier = Modifier.fillMaxSize(0.45f)
                         )
                     }
+// ─────────────────────────────────────
                     // Разделители
                     DialDivider(angleDegrees = 0, color = Color(0x80000000))
                     DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))
