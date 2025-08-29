@@ -22,6 +22,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is MainScreenEvent.OnBtnTimerStartClick -> startTimer()
             is MainScreenEvent.OnBtnTimerStopClick -> stopTimer()
             is MainScreenEvent.OnBtnTimerResetClick -> resetTimer()
+            is MainScreenEvent.OnBtnTimerPauseClick -> pauseTimer()
         }
     }
 
@@ -30,7 +31,6 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
         if (_state.value.isFinished){
             _state.value = _state.value.copy(progressFraction = 0f)
         }
-
         // Устанавливаем isRunning = true в начале
         _state.value = _state.value.copy(isRunning = true)
 
@@ -54,6 +54,17 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             _state.value = _state.value.copy(isRunning = false)
         }
     }
+
+    private fun pauseTimer() {
+        if (_state.value.isRunning && !_state.value.isPaused) {
+            timerJob?.cancel()
+            timerJob = null
+            _state.value = _state.value.copy(isRunning = false, isPaused = true)
+        } else if (_state.value.isPaused) {
+            startTimer() // Продолжаем с текущей позиции
+        }
+    }
+    
     private fun stopTimer() {
         timerJob?.cancel()
         timerJob = null

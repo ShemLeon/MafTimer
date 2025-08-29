@@ -3,7 +3,8 @@ package com.leoevg.maftimer.presenter.screens.main
 data class MainScreenState(
     val totalSeconds: Int = 60,
     val progressFraction: Float = 0f, // 0..1
-    val isRunning: Boolean = false
+    val isRunning: Boolean = false,
+    val isPaused: Boolean = false
 ) {
     val remainingSeconds: Int
         get() = (totalSeconds - (progressFraction * totalSeconds))
