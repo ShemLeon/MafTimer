@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.util
+package com.leoevg.maftimer.presenter.components
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Canvas

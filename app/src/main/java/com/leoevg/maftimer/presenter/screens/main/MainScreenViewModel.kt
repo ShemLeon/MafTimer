@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor() : ViewModel() {
     private var timerJob: Job? = null // корутина
-    private val _state = MutableStateFlow(MainScreenState(totalSeconds = 10)) // потом поменять на 60
+    private val _state = MutableStateFlow(MainScreenState(totalSeconds = 3)) // потом поменять на 60
     val state: StateFlow<MainScreenState> = _state.asStateFlow()
 
     fun onEvent(event: MainScreenEvent) {

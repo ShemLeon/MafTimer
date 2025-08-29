@@ -5,39 +5,39 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.leoevg.maftimer.presenter.util.ProgressBar
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.leoevg.maftimer.navigation.NavigationPaths
-import androidx.compose.ui.platform.LocalConfiguration
-import com.leoevg.maftimer.presenter.util.CustomCircle
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
-import com.leoevg.maftimer.presenter.util.Indicators
-import com.leoevg.maftimer.presenter.util.PlayerContainer
-import com.leoevg.maftimer.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.leoevg.maftimer.presenter.util.DialDivider
+import com.leoevg.maftimer.R
+import com.leoevg.maftimer.navigation.NavigationPaths
+import com.leoevg.maftimer.presenter.components.CustomCircle
+import com.leoevg.maftimer.presenter.components.DialDivider
+import com.leoevg.maftimer.presenter.components.Indicators
+import com.leoevg.maftimer.presenter.components.PlayerContainer
+import com.leoevg.maftimer.presenter.components.ProgressBar
+import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable
 fun MainScreen(
@@ -61,8 +61,10 @@ private fun MainScreenContent(
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
     // Определяем цвета для градиента
-    val topGradientColor = Color(0xFF3B3736) // Более светлый оттенок (сверху)
-    val bottomGradientColor = Color(0xFF292625) // Более темный оттенок (снизу)
+    val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
+    val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
+    val hapticFeedback = LocalHapticFeedback.current   // вибрация при нажатии
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -122,20 +124,27 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .pointerInput(state.isRunning, state.isPaused, state.isFinished) {
                                 detectTapGestures(
+
                                     onLongPress = {
+                                        context.performStrongVibration()       // «сильная» вибрация
                                         if (state.isRunning) {
                                             onEvent(MainScreenEvent.OnBtnTimerPauseClick)
                                         }
                                     },
                                     onTap = {
+                                        context.performStrongVibration(
+                                            durationMs = 120,
+                                            amplitude = 100   // заметно мягче, если устройство поддерживает амплитуду
+                                        )
                                         when {
                                             state.isFinished -> {
                                                 onEvent(MainScreenEvent.OnBtnTimerResetClick)
                                                 onEvent(MainScreenEvent.OnBtnTimerStartClick)
                                             }
+
                                             state.isRunning -> onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                                            state.isPaused  -> onEvent(MainScreenEvent.OnBtnTimerResumeClick)
-                                            else            -> onEvent(MainScreenEvent.OnBtnTimerStartClick)
+                                            state.isPaused -> onEvent(MainScreenEvent.OnBtnTimerResumeClick)
+                                            else -> onEvent(MainScreenEvent.OnBtnTimerStartClick)
                                         }
                                     }
                                 )
@@ -144,7 +153,9 @@ private fun MainScreenContent(
                     ) {
                         Icon(
                             painter = painterResource(
-                                id = if (state.isRunning) R.drawable.btn_renew else R.drawable.btn_start
+                                id = if (state.isRunning) R.drawable.btn_renew
+                                else if (state.isPaused) R.drawable.btn_pause
+                                else R.drawable.btn_start
                             ),
                             contentDescription = if (state.isRunning) "Renew" else "Start",
                             tint = Color.Black,

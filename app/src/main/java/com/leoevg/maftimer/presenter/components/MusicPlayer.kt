@@ -1,8 +1,8 @@
-package com.leoevg.maftimer.presenter.util
+package com.leoevg.maftimer.presenter.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,40 +19,50 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.leoevg.maftimer.R
 
 // Основной контейнер плеера
 @Composable
-fun PlayerContainer() {
+fun PlayerContainer(
+    singer: String = "Maser",
+    title: String = "На магистрейте",
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 25.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color(0xCC424242)) // Полупрозрачный темно-серый
-            .padding(16.dp),
+            .padding(18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Строка 1: Информация о песне
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Заглушка для обложки альбома
-            Box(
+            // example for album title
+            Image(
+                painter = painterResource(R.drawable.ernest),
+                contentDescription = "Обложка альбома",
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF5A5A5A))
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.padding(8.dp))
-            Column {
-                Text("Maser", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
-                Text("На магистрейте", color = Color.LightGray, fontSize = 16.sp)
+
+            Column(
+                modifier = Modifier.padding(start = 18.dp)
+            ) {
+                Text(text = singer, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                Text(text = title, color = Color.LightGray, fontSize = 16.sp)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
