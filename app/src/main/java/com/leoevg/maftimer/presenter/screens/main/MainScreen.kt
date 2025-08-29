@@ -108,6 +108,7 @@ private fun MainScreenContent(
                         percentage = progress, // сектор от 60
                         number = 60,           // текст внутри = seconds
                         color = Color.Green,
+                        animDuration = 100, // 10 секунд.
                         strokeWidth = 12.dp
                     )
                     // Кнопка управления
@@ -117,13 +118,16 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .padding(start = 25.dp),
                         onClick = {
+                            if (progress > 0f) {
+                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
+                            }
                             onEvent(MainScreenEvent.OnBtnTimerStartClick)
                         },
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.btn_start),
-                            contentDescription = "Start",
-                            tint = Color.Red,
+                            painter = painterResource(id = if (progress > 0f && progress < 1f) R.drawable.btn_renew else R.drawable.btn_start),
+                            contentDescription = if (progress > 0f && progress < 1f) "Renew" else "Start",
+                            tint = Color.Black,
                             modifier = Modifier
                                 .fillMaxSize(0.45f),
                         )
@@ -161,3 +165,13 @@ fun TimerScreenPreview() {
         onEvent = { it -> }
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun TimerScreenPreviewStart() {
+    MainScreenContent(
+        progress = 0.0f,
+        onEvent = { it -> }
+    )
+}
+

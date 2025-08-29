@@ -26,9 +26,11 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun startTimer() {
-        if (timerJob?.isActive == true || _progressFraction.value >= 1f) return
+        if (timerJob?.isActive == true) return
+        if (_progressFraction.value >= 1f) _progressFraction.value = 0f
+
         val startFraction = _progressFraction.value
-        val durationMs = ((1f - startFraction) * 60_000L).toLong().coerceAtLeast(1L)
+        val durationMs = ((1f - startFraction) * 10_000L).toLong().coerceAtLeast(1L)
 
         timerJob = viewModelScope.launch {
             val start = SystemClock.elapsedRealtime()

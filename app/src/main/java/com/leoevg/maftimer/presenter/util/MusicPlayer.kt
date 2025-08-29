@@ -51,8 +51,8 @@ fun PlayerContainer() {
             )
             Spacer(modifier = Modifier.padding(8.dp))
             Column {
-                Text("Кухни", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
-                Text("Бонд с кнопкой", color = Color.LightGray, fontSize = 16.sp)
+                Text("Maser", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                Text("На магистрейте", color = Color.LightGray, fontSize = 16.sp)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))

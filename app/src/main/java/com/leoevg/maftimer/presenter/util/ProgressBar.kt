@@ -29,7 +29,7 @@ fun ProgressBar(
     radius: Dp = 50.dp,         // Радиус круга
     color: Color = Color.Green, // Цвет прогресса
     strokeWidth: Dp = 8.dp,     // Толщина линии
-    animDuration: Int = 1000,   // Длительность анимации (мс)
+    animDuration: Int = 100,   // Длительность анимации (мс)
     animDelay: Int = 0           // Задержка перед анимацией (мс)
 ) {
     val curPercentage = percentage
@@ -46,8 +46,7 @@ fun ProgressBar(
 
             // Фоновый круг
             drawArc(
-//                color = Color.LightGray,
-                color = if (curPercentage >= (50f / 60f)) Color(0xFFFF3B30) else Color.LightGray,
+                color = if (curPercentage >= (50f / 60f)) Color.Green else Color.Green,
                 startAngle = -90f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -55,10 +54,21 @@ fun ProgressBar(
                 topLeft = Offset(centerX - radiusPx, centerY - radiusPx),
                 size = Size(radiusPx * 2, radiusPx * 2)
             )
-
+            // красный сектор
+            if (curPercentage >= (50f / 60f)) {
+                drawArc(
+                    color = Color(0xFFFF3B30), // красная зона последних 10 сек (hex)
+                    startAngle = -90f,         // от 12 часов
+                    sweepAngle = 60f,          // по часовой до ~2 часа
+                    useCenter = false,
+                    style = Stroke(width = strokeWidthPx, cap = StrokeCap.Round),
+                    topLeft = Offset(centerX - radiusPx, centerY - radiusPx),
+                    size = Size(radiusPx * 2, radiusPx * 2)
+                )
+            }
             // Прогресс-дуга
             drawArc(
-                color = color,
+                color = Color(0xFF9E9E9E), // серая “съедающая” дуга
                 startAngle = -90f,
                 sweepAngle = -360 * curPercentage,
                 useCenter = false,
@@ -67,6 +77,7 @@ fun ProgressBar(
                 size = Size(radiusPx * 2, radiusPx * 2)
             )
         }
+
 
         Text(
             modifier = Modifier
@@ -91,3 +102,16 @@ fun CircularProgressBarPreview() {
         animDuration = 1200
     )
 }
+
+@Composable
+@Preview(showBackground = true)
+fun CircularProgressBarPreviewRenew() {
+    ProgressBar(
+        percentage = 0.75f,
+        number = 100,
+        color = Color.Green,
+        strokeWidth = 12.dp,
+        animDuration = 1200
+    )
+}
+
