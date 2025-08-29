@@ -1,6 +1,7 @@
 package com.leoevg.maftimer.presenter.screens.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ import com.leoevg.maftimer.navigation.NavigationPaths
 import androidx.compose.ui.platform.LocalConfiguration
 import com.leoevg.maftimer.presenter.util.CustomCircle
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Alignment
@@ -32,6 +35,7 @@ import com.leoevg.maftimer.presenter.util.PlayerContainer
 import com.leoevg.maftimer.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.presenter.util.DialDivider
 
@@ -111,15 +115,25 @@ private fun MainScreenContent(
                         animDuration = 100, // 10 секунд.
                         strokeWidth = 12.dp
                     )
-                    // Кнопка управления
                     IconButton(
                         modifier = Modifier
                             .fillMaxSize(1f)
                             .align(Alignment.Center)
                             .padding(
                                 start = if (state.isRunning) 0.dp else 25.dp
-                            ),
+                            )
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        // Долгое нажатие - ставим на паузу (только если таймер работает)
+                                        if (state.isRunning) {
+                                            onEvent(MainScreenEvent.OnBtnTimerPauseClick)
+                                        }
+                                    }
+                                )
+                            },
                         onClick = {
+                            // Обычное нажатие
                             if (state.isFinished) {
                                 // Если таймер завершен - запускаем заново
                                 onEvent(MainScreenEvent.OnBtnTimerResetClick)
@@ -127,10 +141,10 @@ private fun MainScreenContent(
                             } else if (state.isRunning) {
                                 // Если таймер работает - сбрасываем
                                 onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                            }else if (state.isPaused){
-
-                                //Todo: сделать функционал на паузе
-                            }else {
+                            } else if (state.isPaused) {
+                                // Если на паузе - возобновляем
+                                onEvent(MainScreenEvent.OnBtnTimerResumeClick)
+                            } else {
                                 // Если таймер остановлен - запускаем
                                 onEvent(MainScreenEvent.OnBtnTimerStartClick)
                             }

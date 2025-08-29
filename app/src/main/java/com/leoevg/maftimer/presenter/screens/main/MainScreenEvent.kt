@@ -5,4 +5,5 @@ sealed interface MainScreenEvent {
     object OnBtnTimerStopClick: MainScreenEvent
     object OnBtnTimerResetClick: MainScreenEvent
     object OnBtnTimerPauseClick: MainScreenEvent
+    object OnBtnTimerResumeClick: MainScreenEvent
 }

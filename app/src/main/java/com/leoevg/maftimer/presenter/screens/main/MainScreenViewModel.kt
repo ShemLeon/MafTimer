@@ -23,16 +23,17 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is MainScreenEvent.OnBtnTimerStopClick -> stopTimer()
             is MainScreenEvent.OnBtnTimerResetClick -> resetTimer()
             is MainScreenEvent.OnBtnTimerPauseClick -> pauseTimer()
+            is MainScreenEvent.OnBtnTimerResumeClick -> resumeTimer()
         }
     }
 
     private fun startTimer() {
         if (timerJob?.isActive == true) return
         if (_state.value.isFinished){
-            _state.value = _state.value.copy(progressFraction = 0f)
+            _state.value = _state.value.copy(progressFraction = 0f, isPaused = false)
         }
         // Устанавливаем isRunning = true в начале
-        _state.value = _state.value.copy(isRunning = true)
+        _state.value = _state.value.copy(isRunning = true,  isPaused = false)
 
         val startFraction = _state.value.progressFraction
         val totalSeconds = _state.value.totalSeconds
@@ -60,7 +61,12 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             timerJob?.cancel()
             timerJob = null
             _state.value = _state.value.copy(isRunning = false, isPaused = true)
-        } else if (_state.value.isPaused) {
+        }
+    }
+
+    private fun resumeTimer() {
+        if (_state.value.isPaused && !_state.value.isRunning) {
+            _state.value = _state.value.copy(isPaused = false)
             startTimer() // Продолжаем с текущей позиции
         }
     }
@@ -73,7 +79,7 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
 
     private fun resetTimer() {
         stopTimer()
-        _state.value = _state.value.copy(progressFraction = 0f)
+        _state.value = _state.value.copy(progressFraction = 0f, isPaused = false)
     }
 
 
