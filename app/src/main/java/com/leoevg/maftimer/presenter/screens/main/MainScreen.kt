@@ -40,17 +40,17 @@ fun MainScreen(
     navigate: (NavigationPaths) -> Unit
 ) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
-    val progress by viewModel.progressFraction.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     MainScreenContent(
-        progress = progress,
+        state = state,
         onEvent = viewModel::onEvent
     )
 }
 
 @Composable
 private fun MainScreenContent(
-    progress: Float,
+    state: MainScreenState,
     onEvent: (MainScreenEvent) -> Unit
 ) {
     // Извлекаем высоту экрана в Dp
@@ -105,7 +105,7 @@ private fun MainScreenContent(
                         diameterFraction = 1f
                     )
                     ProgressBar(
-                        percentage = progress, // сектор от 60
+                        percentage = state.progressFraction, // сектор от 60
                         number = 60,           // текст внутри = seconds
                         color = Color.Green,
                         animDuration = 100, // 10 секунд.
@@ -116,20 +116,30 @@ private fun MainScreenContent(
                         modifier = Modifier
                             .fillMaxSize(1f)
                             .align(Alignment.Center)
-                            .padding(start = 25.dp),
+                            .padding(
+                                start = if (state.isRunning) 0.dp else 25.dp
+                            ),
                         onClick = {
-                            if (progress > 0f) {
+                            if (state.isFinished) {
+                                // Если таймер завершен - запускаем заново
                                 onEvent(MainScreenEvent.OnBtnTimerResetClick)
+                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
+                            } else if (state.isRunning) {
+                                // Если таймер работает - сбрасываем
+                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
+                            } else {
+                                // Если таймер остановлен - запускаем
+                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
                             }
-                            onEvent(MainScreenEvent.OnBtnTimerStartClick)
-                        },
+                        }
                     ) {
                         Icon(
-                            painter = painterResource(id = if (progress > 0f && progress < 1f) R.drawable.btn_renew else R.drawable.btn_start),
-                            contentDescription = if (progress > 0f && progress < 1f) "Renew" else "Start",
+                            painter = painterResource(
+                                id = if (state.isRunning) R.drawable.btn_renew else R.drawable.btn_start
+                            ),
+                            contentDescription = if (state.isRunning) "Renew" else "Start",
                             tint = Color.Black,
-                            modifier = Modifier
-                                .fillMaxSize(0.45f),
+                            modifier = Modifier.fillMaxSize(0.45f),
                         )
                     }
                     // Разделители
@@ -161,7 +171,10 @@ private fun MainScreenContent(
 @Composable
 fun TimerScreenPreview() {
     MainScreenContent(
-        progress = 0.3f,
+        state = MainScreenState(
+            progressFraction = 0.3f,
+            isRunning = true
+        ),
         onEvent = { it -> }
     )
 }
@@ -170,7 +183,7 @@ fun TimerScreenPreview() {
 @Composable
 fun TimerScreenPreviewStart() {
     MainScreenContent(
-        progress = 0.0f,
+        state = MainScreenState(progressFraction = 0f, isRunning = false),
         onEvent = { it -> }
     )
 }

@@ -13,9 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor() : ViewModel() {
-    private val _progressFraction = MutableStateFlow(0f) // 0f..1f
-    val progressFraction: StateFlow<Float> = _progressFraction.asStateFlow()
     private var timerJob: Job? = null // корутина
+    private val _state = MutableStateFlow(MainScreenState(totalSeconds = 10)) // потом поменять на 60
+    val state: StateFlow<MainScreenState> = _state.asStateFlow()
 
     fun onEvent(event: MainScreenEvent) {
         when (event) {
@@ -27,10 +27,16 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
 
     private fun startTimer() {
         if (timerJob?.isActive == true) return
-        if (_progressFraction.value >= 1f) _progressFraction.value = 0f
+        if (_state.value.isFinished){
+            _state.value = _state.value.copy(progressFraction = 0f)
+        }
 
-        val startFraction = _progressFraction.value
-        val durationMs = ((1f - startFraction) * 10_000L).toLong().coerceAtLeast(1L)
+        // Устанавливаем isRunning = true в начале
+        _state.value = _state.value.copy(isRunning = true)
+
+        val startFraction = _state.value.progressFraction
+        val totalSeconds = _state.value.totalSeconds
+        val durationMs = ((1f - startFraction) * totalSeconds * 1000L).toLong().coerceAtLeast(1L)
 
         timerJob = viewModelScope.launch {
             val start = SystemClock.elapsedRealtime()
@@ -38,21 +44,25 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             while (isActive) {
                 val now = SystemClock.elapsedRealtime()
                 val t = ((now - start).toFloat() / durationMs).coerceIn(0f, 1f)
-                _progressFraction.value = startFraction + t * (1f - startFraction)
+                _state.value = _state.value.copy(
+                    progressFraction = startFraction + t * (1f - startFraction)
+                )
                 if (now >= end) break
                 delay(16) // ~60 FPS
             }
-            _progressFraction.value = 1f
+            // Устанавливаем isRunning = false когда таймер завершен
+            _state.value = _state.value.copy(isRunning = false)
         }
     }
     private fun stopTimer() {
         timerJob?.cancel()
         timerJob = null
+        _state.value = _state.value.copy(isRunning = false)
     }
 
     private fun resetTimer() {
         stopTimer()
-        _progressFraction.value = 0f
+        _state.value = _state.value.copy(progressFraction = 0f)
     }
 
 
