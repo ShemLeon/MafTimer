@@ -29,19 +29,19 @@ import com.leoevg.maftimer.R
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.rotate
 
 // Основной контейнер плеера
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerContainer(
     singer: String = "Maser",
@@ -61,8 +61,9 @@ fun PlayerContainer(
             .padding(horizontal = 25.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color(0xCC424242)) // Полупрозрачный темно-серый
-            .padding(18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(top = 15.dp, start = 15.dp, end = 15.dp),
+
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // Строка 1: Информация о песне
         Row(
@@ -79,11 +80,16 @@ fun PlayerContainer(
                     .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
-
+            // Описание песни
             Column(
                 modifier = Modifier.padding(start = 18.dp)
             ) {
-                Text(text = singer, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                Text(
+                    text = singer,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
                 Text(text = title, color = Color.LightGray, fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -105,27 +111,101 @@ fun PlayerContainer(
                 contentScale = ContentScale.Crop
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-
         // Строка 2: Слайдер и время
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                ,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier
+                    .width(30.dp),
+                text = "0:29",
+                color = Color.LightGray,
+                fontSize = 12.sp
+            )
             Slider(
-                value = 0.34f, // Примерное значение, как на скриншоте
+                value = 0.24f,
                 onValueChange = { /* TODO */ },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(20.dp)
+                ,
                 colors = SliderDefaults.colors(
                     thumbColor = Color.White,
                     activeTrackColor = Color.White,
                     inactiveTrackColor = Color.Gray.copy(alpha = 0.5f)
-                )
+                ),
+                thumb = {
+                    Box(
+                        modifier = Modifier
+                            .size(13.dp) // Уменьшаем размер разделителя
+                            .background(Color.White, CircleShape)
+                    )
+                },
+                track = {
+                    SliderDefaults.Track(
+                        modifier = Modifier.height(8.dp), // Уменьшаем высоту полоски
+                        sliderState = it,
+                        colors = SliderDefaults.colors(
+                            activeTrackColor = Color.White,
+                            inactiveTrackColor = Color.Gray.copy(alpha = 0.5f)
+                        ),
+                        enabled = true
+                    )
+                }
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("0:29", color = Color.LightGray, fontSize = 12.sp)
-                Text("-1:51", color = Color.LightGray, fontSize = 12.sp)
-            }
+            Text(
+                modifier = Modifier
+                    .width(30.dp),
+                text = "1:30",
+                color = Color.LightGray,
+                fontSize = 12.sp
+            )
+        }
+        val h =  remember {40};
+        // Кнопки управления
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.btn_strelki),
+                contentDescription = "spotify",
+                modifier = Modifier
+                    .rotate(180f)
+                    .size(h.dp)
+                    .clickable {
+
+                    },
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.width(20.dp))
+            Image(
+                painter = painterResource(R.drawable.btn_pause),
+                contentDescription = "btn_player_main",
+                modifier = Modifier
+                    .size((h*1.1).dp)
+                    .clickable {
+
+                    },
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.width(20.dp))
+            Image(
+                painter = painterResource(R.drawable.btn_strelki),
+                contentDescription = "spotify",
+                modifier = Modifier
+                    .size(h.dp)
+                    .clickable {
+
+                    },
+                contentScale = ContentScale.Fit
+            )
         }
 
 
@@ -136,16 +216,4 @@ fun PlayerContainer(
 @Preview(showBackground = true)
 fun MusicPlayerPreview() {
     PlayerContainer()
-}
-
-@Composable
-fun PlayerContainer(
-    trackName: String,
-    artist: String,
-    progress: Float, // от 0 до 1
-    isPlaying: Boolean,
-    onPlayPause: () -> Unit
-) {
-    // Используй эти параметры для обновления Text, Slider и кнопок
-    // Например, в Slider: value = progress
 }
