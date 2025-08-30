@@ -26,6 +26,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoevg.maftimer.R
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
 // Основной контейнер плеера
 @Composable
@@ -33,6 +47,14 @@ fun PlayerContainer(
     singer: String = "Maser",
     title: String = "На магистрейте",
 ) {
+    // В вашем Composable функции:
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,6 +86,24 @@ fun PlayerContainer(
                 Text(text = singer, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
                 Text(text = title, color = Color.LightGray, fontSize = 16.sp)
             }
+            Spacer(modifier = Modifier.weight(1f))
+            Image(
+                painter = painterResource(R.drawable.spotify),
+                contentDescription = "spotify",
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("spotify://"))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // Если Spotify не установлен, показываем диалог
+                            showDialog = true
+                        }
+                    },
+                contentScale = ContentScale.Crop
+            )
         }
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -96,4 +136,16 @@ fun PlayerContainer(
 @Preview(showBackground = true)
 fun MusicPlayerPreview() {
     PlayerContainer()
+}
+
+@Composable
+fun PlayerContainer(
+    trackName: String,
+    artist: String,
+    progress: Float, // от 0 до 1
+    isPlaying: Boolean,
+    onPlayPause: () -> Unit
+) {
+    // Используй эти параметры для обновления Text, Slider и кнопок
+    // Например, в Slider: value = progress
 }
