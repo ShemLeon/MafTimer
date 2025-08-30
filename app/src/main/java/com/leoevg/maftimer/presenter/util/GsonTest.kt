@@ -65,3 +65,4 @@ object GsonTest {
         """.trimIndent()
     }
 }
+
