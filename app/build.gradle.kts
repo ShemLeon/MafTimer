@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation(files("libs/spotify-app-remote-release-0.8.0.aar"))
     implementation(libs.auth)
     implementation(libs.app.remote)
     // Gson
@@ -52,6 +53,7 @@ dependencies {
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.navigation.compose)
+
     ksp(libs.dagger.hilt.compiler)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

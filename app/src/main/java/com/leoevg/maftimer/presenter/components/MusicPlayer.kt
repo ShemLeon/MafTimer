@@ -97,3 +97,15 @@ fun PlayerContainer(
 fun MusicPlayerPreview() {
     PlayerContainer()
 }
+
+@Composable
+fun PlayerContainer(
+    trackName: String,
+    artist: String,
+    progress: Float, // от 0 до 1
+    isPlaying: Boolean,
+    onPlayPause: () -> Unit
+) {
+    // Используй эти параметры для обновления Text, Slider и кнопок
+    // Например, в Slider: value = progress
+}

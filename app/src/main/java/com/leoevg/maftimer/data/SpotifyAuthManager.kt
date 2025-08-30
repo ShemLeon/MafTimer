@@ -59,8 +59,8 @@ class SpotifyAuthManager @Inject constructor() {
                 _authState.value = AuthState.NotAuthenticated
             }
 
-            AuthorizationResponse.Type.CODE -> TODO()
-            AuthorizationResponse.Type.UNKNOWN -> TODO()
+            AuthorizationResponse.Type.CODE -> _authState.value = Error("Code response not handled")
+            AuthorizationResponse.Type.UNKNOWN -> _authState.value = Error("Unknown response")
         }
     }
 

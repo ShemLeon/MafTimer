@@ -1,6 +1,9 @@
 package com.leoevg.maftimer.presenter.screens.main
 
-
+import com.leoevg.maftimer.data.AuthState
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import android.os.SystemClock
 import androidx.lifecycle.viewModelScope
@@ -10,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import com.leoevg.maftimer.data.SpotifyAuthManager
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor() : ViewModel() {
@@ -18,7 +22,6 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     val state: StateFlow<MainScreenState> = _state.asStateFlow()
 
     fun onEvent(event: MainScreenEvent) {
-
         when (event) {
             is MainScreenEvent.OnBtnTimerStartClick -> startTimer()
             is MainScreenEvent.OnBtnTimerStopClick -> stopTimer()
@@ -26,6 +29,11 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             is MainScreenEvent.OnBtnTimerPauseClick -> pauseTimer()
             is MainScreenEvent.OnBtnTimerResumeClick -> resumeTimer()
         }
+    }
+
+    // Add this function to handle authentication
+    fun authenticate(context: Context) {
+        spotifyAuthManager
     }
 
     private fun startTimer() {
