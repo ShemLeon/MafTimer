@@ -47,6 +47,17 @@ android {
 }
 
 dependencies {
+    // Media3 dependencies
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+    implementation("androidx.media3:media3-ui:1.5.0")
+    implementation("androidx.media3:media3-session:1.5.0")
+    implementation("androidx.media3:media3-common:1.5.0")
+
+// Для работы с Spotify Web API
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
     // Spotify Auth (доступна в Maven Central)
     implementation("com.spotify.android:auth:2.1.2")
 

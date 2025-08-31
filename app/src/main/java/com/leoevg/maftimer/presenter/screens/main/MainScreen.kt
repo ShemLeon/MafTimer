@@ -35,27 +35,30 @@ import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.components.CustomCircle
 import com.leoevg.maftimer.presenter.components.DialDivider
 import com.leoevg.maftimer.presenter.components.Indicators
-import com.leoevg.maftimer.presenter.components.PlayerContainer
+import com.leoevg.maftimer.presenter.util.PlayerContainer
 import com.leoevg.maftimer.presenter.components.ProgressBar
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable
 fun MainScreen(
-    navigate: (NavigationPaths) -> Unit
+    navigate: (NavigationPaths) -> Unit,
+    onSpotifyAuthRequest: () -> Unit = {}
 ) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
     val state by viewModel.state.collectAsState()
 
     MainScreenContent(
         state = state,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onSpotifyAuthRequest = onSpotifyAuthRequest
     )
 }
 
 @Composable
 private fun MainScreenContent(
     state: MainScreenState,
-    onEvent: (MainScreenEvent) -> Unit
+    onEvent: (MainScreenEvent) -> Unit,
+    onSpotifyAuthRequest: () -> Unit = {}
 ) {
     // Извлекаем высоту экрана в Dp
     val configuration = LocalConfiguration.current
@@ -183,7 +186,7 @@ private fun MainScreenContent(
         ) {
             // Три маленьких кружочка сверху
             Indicators()
-            PlayerContainer()
+            PlayerContainer(onSpotifyAuthRequest = onSpotifyAuthRequest)
         }
     }
 }
@@ -209,4 +212,3 @@ fun TimerScreenPreviewStart() {
         onEvent = { it -> }
     )
 }
-
