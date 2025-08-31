@@ -48,9 +48,11 @@ android {
 
 dependencies {
 
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+
     // Spotify Maven dependency
     implementation("com.spotify.android:auth:2.1.2")
-  //  implementation("com.spotify.android:app-remote:0.8.0")
+//    implementation("com.spotify.android:app-remote:0.8.0")
 
     // Gson
     implementation("com.google.code.gson:gson:2.13.1")
