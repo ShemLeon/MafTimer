@@ -7,10 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-//repositories {
-//    mavenCentral()
-//}
-
 android {
     namespace = "com.leoevg.maftimer"
     compileSdk = 36
@@ -23,6 +19,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Добавьте эти строки
+        manifestPlaceholders["redirectSchemeName"] = "maftimer"
+        manifestPlaceholders["redirectHostName"] = "callback"
     }
 
     buildTypes {
@@ -47,15 +47,12 @@ android {
 }
 
 dependencies {
-
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-
-    // Spotify Maven dependency
+    // Spotify Auth (доступна в Maven Central)
     implementation("com.spotify.android:auth:2.1.2")
-//    implementation("com.spotify.android:app-remote:0.8.0")
 
     // Gson
     implementation("com.google.code.gson:gson:2.13.1")
+
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.navigation.compose)
@@ -73,7 +70,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)
-
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
