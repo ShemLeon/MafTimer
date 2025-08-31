@@ -61,11 +61,20 @@ class SpotifyAuthManager @Inject constructor(
                 "client_id=$CLIENT_ID" +
                 "&response_type=code" +
                 "&redirect_uri=$REDIRECT_URI" +
-                "&scope=$SCOPES"
+                "&scope=$SCOPES" +
+                "&show_dialog=true"  // Принудительно показать диалог авторизации
 
         Log.d("SpotifyAuthManager", "Starting auth with URL: $authUrl")
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
-        activity.startActivity(intent)
+
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
+            // Принудительно открыть в браузере, а не в Spotify приложении
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("SpotifyAuthManager", "Failed to start auth", e)
+        }
     }
 
     fun handleAuthResponse(intent: Intent): String? {
