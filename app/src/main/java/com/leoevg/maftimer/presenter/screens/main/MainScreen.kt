@@ -160,11 +160,10 @@ private fun MainScreenContent(
                             tint = Color.Black,
                             modifier = Modifier
                                 .fillMaxSize(0.45f)
-                                .offset(x = if (state.isRunning || state.isPaused ) 0.dp else (screenHeightDp * 0.015f))
+                                .offset(x = if (state.isRunning || state.isPaused) 0.dp else (screenHeightDp * 0.015f))
 
                         )
                     }
-// ─────────────────────────────────────
                     // Разделители
                     DialDivider(angleDegrees = 0, color = Color(0x80000000))
                     DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))
