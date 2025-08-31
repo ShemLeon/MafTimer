@@ -124,7 +124,6 @@ private fun MainScreenContent(
                             .align(Alignment.Center)
                             .pointerInput(state.isRunning, state.isPaused, state.isFinished) {
                                 detectTapGestures(
-
                                     onLongPress = {
                                         context.performStrongVibration()       // «сильная» вибрация
                                         if (state.isRunning) {
@@ -159,7 +158,10 @@ private fun MainScreenContent(
                             ),
                             contentDescription = if (state.isRunning) "Renew" else "Start",
                             tint = Color.Black,
-                            modifier = Modifier.fillMaxSize(0.45f)
+                            modifier = Modifier
+                                .fillMaxSize(0.45f)
+                                .offset(x = if (state.isRunning || state.isPaused ) 0.dp else (screenHeightDp * 0.015f))
+
                         )
                     }
 // ─────────────────────────────────────
