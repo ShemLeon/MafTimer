@@ -2,9 +2,7 @@ package com.leoevg.maftimer.presenter.screens.sections.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leoevg.maftimer.data.api.SpotifyPlaybackState
 import com.leoevg.maftimer.data.repository.SpotifyRepository
-import com.leoevg.maftimer.presenter.screens.main.MainScreenState
 import com.leoevg.maftimer.util.SpotifyAuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

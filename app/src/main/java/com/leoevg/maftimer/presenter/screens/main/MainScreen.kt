@@ -4,14 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,19 +22,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.R
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.components.CustomCircle
-import com.leoevg.maftimer.presenter.components.DialDivider
-import com.leoevg.maftimer.presenter.components.Indicators
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.CustomCircle
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.DialDivider
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.Indicators
 import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
-import com.leoevg.maftimer.presenter.components.ProgressBar
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.ProgressBar
+import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable
@@ -83,19 +80,7 @@ private fun MainScreenContent(
             .padding(5.dp)
     ) {
         Column() {
-            // Блок с title
-            Row(
-                modifier = Modifier.padding(10.dp)
-            ) {
-                Text(
-                    text = "Timer Screen",
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                    fontSize = 30.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
+            TitleApplication()
             // Блок с кругом
             Box(
                 modifier = Modifier
@@ -104,78 +89,9 @@ private fun MainScreenContent(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .aspectRatio(1f)
-                ) {
-                    CustomCircle(
-                        color = Color.White,
-                        diameterFraction = 1f
-                    )
-                    ProgressBar(
-                        percentage = state.progressFraction, // сектор от 60
-                        number = 60,           // текст внутри = seconds
-                        color = Color.Green,
-                        animDuration = 100, // 10 секунд.
-                        strokeWidth = 12.dp
-                    )
-                    // ───── вместо IconButton { … } ─────
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.Center)
-                            .pointerInput(state.isRunning, state.isPaused, state.isFinished) {
-                                detectTapGestures(
-                                    onLongPress = {
-                                        context.performStrongVibration()       // «сильная» вибрация
-                                        if (state.isRunning) {
-                                            onEvent(MainScreenEvent.OnPauseClick)
-                                        }
-                                    },
-                                    onTap = {
-                                        context.performStrongVibration(
-                                            durationMs = 120,
-                                            amplitude = 100   // заметно мягче, если устройство поддерживает амплитуду
-                                        )
-                                        when {
-                                            state.isFinished -> {
-                                                onEvent(MainScreenEvent.OnResetClick)
-                                                onEvent(MainScreenEvent.OnStartClick)
-                                            }
-
-                                            state.isRunning -> onEvent(MainScreenEvent.OnResetClick)
-                                            state.isPaused -> onEvent(MainScreenEvent.OnResumeClick)
-                                            else -> onEvent(MainScreenEvent.OnStartClick)
-                                        }
-                                    }
-                                )
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                id = if (state.isRunning) R.drawable.btn_renew
-                                else if (state.isPaused) R.drawable.btn_pause
-                                else R.drawable.btn_start
-                            ),
-                            contentDescription = if (state.isRunning) "Renew" else "Start",
-                            tint = Color.Black,
-                            modifier = Modifier
-                                .fillMaxSize(0.45f)
-                                .offset(x = if (state.isRunning || state.isPaused) 0.dp else (screenHeightDp * 0.015f))
-
-                        )
-                    }
-                    // Разделители
-                    DialDivider(angleDegrees = 0, color = Color(0x80000000))
-                    DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))
-                    DialDivider(angleDegrees = 60, color = Color(0x80fc520d))
-
-                }
+                TimerAssembly()
             }
         }
-
         // Блок для плеера
         Column(
             modifier = Modifier
