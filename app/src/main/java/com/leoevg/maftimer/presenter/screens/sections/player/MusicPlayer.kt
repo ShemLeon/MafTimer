@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.util
+package com.leoevg.maftimer.presenter.screens.sections.player
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,73 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.leoevg.maftimer.data.api.SpotifyPlaybackState
-import com.leoevg.maftimer.data.repository.SpotifyRepository
-import com.leoevg.maftimer.util.SpotifyAuthManager
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-@HiltViewModel
-class MusicPlayerViewModel @Inject constructor(
-    private val spotifyRepository: SpotifyRepository,
-    private val authManager: SpotifyAuthManager
-) : ViewModel() {
-
-    val playbackState: StateFlow<SpotifyPlaybackState?> = spotifyRepository.playbackState
-
-    init {
-        // Устанавливаем токен при инициализации
-        authManager.getStoredToken()?.let { token ->
-            spotifyRepository.setAccessToken(token)
-        }
-    }
-
-    fun play() {
-        viewModelScope.launch {
-            spotifyRepository.play()
-        }
-    }
-
-    fun pause() {
-        viewModelScope.launch {
-            spotifyRepository.pause()
-        }
-    }
-
-    fun next() {
-        viewModelScope.launch {
-            spotifyRepository.next()
-        }
-    }
-
-    fun previous() {
-        viewModelScope.launch {
-            spotifyRepository.previous()
-        }
-    }
-
-    fun seekTo(positionMs: Long) {
-        viewModelScope.launch {
-            spotifyRepository.seekTo(positionMs)
-        }
-    }
-
-    fun refreshPlayback() {
-        viewModelScope.launch {
-            spotifyRepository.getCurrentPlayback()
-        }
-    }
-
-    fun isAuthorized(): Boolean {
-        return authManager.getStoredToken() != null
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +29,7 @@ fun PlayerContainer(
     viewModel: MusicPlayerViewModel = hiltViewModel(),
     onSpotifyAuthRequest: () -> Unit = {}
 ) {
-    val playbackState by viewModel.playbackState.collectAsState()
+    val state by viewModel.state.collectAsState()
     val isAuthorized = viewModel.isAuthorized()
 
     LaunchedEffect(Unit) {
@@ -103,12 +37,6 @@ fun PlayerContainer(
             viewModel.refreshPlayback()
         }
     }
-
-    val singer = playbackState?.item?.artists?.firstOrNull()?.name ?: "Maser"
-    val title = playbackState?.item?.name ?: "На магистрейте"
-    val isPlaying = playbackState?.is_playing ?: false
-    val progressMs = playbackState?.progress_ms ?: 0L
-    val durationMs = playbackState?.item?.duration_ms ?: 90000L
 
     Column(
         modifier = Modifier
@@ -136,12 +64,12 @@ fun PlayerContainer(
 
             Column(modifier = Modifier.padding(start = 18.dp)) {
                 Text(
-                    text = singer,
+                    text = state.singer,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp
                 )
-                Text(text = title, color = Color.LightGray, fontSize = 16.sp)
+                Text(text = state.title, color = Color.LightGray, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -180,20 +108,22 @@ fun PlayerContainer(
         ) {
             Text(
                 modifier = Modifier.width(30.dp),
-                text = formatTime(progressMs),
+                text = formatTime(state.progressMs),
                 color = Color.LightGray,
                 fontSize = 12.sp
             )
 
             Slider(
-                value = if (durationMs > 0) progressMs.toFloat() / durationMs.toFloat() else 0f,
+                value = if (state.durationMs > 0) state.progressMs.toFloat() / state.durationMs.toFloat() else 0f,
                 onValueChange = { newValue ->
                     if (isAuthorized) {
-                        val newPosition = (newValue * durationMs).toLong()
+                        val newPosition = (newValue * state.durationMs).toLong()
                         viewModel.seekTo(newPosition)
                     }
                 },
-                modifier = Modifier.weight(1f).height(20.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(20.dp),
                 enabled = isAuthorized,
                 colors = SliderDefaults.colors(
                     thumbColor = Color.White,
@@ -222,7 +152,7 @@ fun PlayerContainer(
 
             Text(
                 modifier = Modifier.width(30.dp),
-                text = formatTime(durationMs),
+                text = formatTime(state.durationMs),
                 color = Color.LightGray,
                 fontSize = 12.sp
             )
@@ -253,12 +183,12 @@ fun PlayerContainer(
 
             Image(
                 painter = painterResource(R.drawable.btn_pause),
-                contentDescription = if (isPlaying) "pause" else "play",
+                contentDescription = if (state.isPlaying) "pause" else "play",
                 modifier = Modifier
                     .size((buttonSize * 1.1).dp)
                     .clickable {
                         if (isAuthorized) {
-                            if (isPlaying) viewModel.pause() else viewModel.play()
+                            if (state.isPlaying) viewModel.pause() else viewModel.play()
                         }
                     },
                 contentScale = ContentScale.Fit

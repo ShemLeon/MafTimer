@@ -20,11 +20,15 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     fun onEvent(event: MainScreenEvent) {
 
         when (event) {
-            is MainScreenEvent.OnBtnTimerStartClick -> startTimer()
-            is MainScreenEvent.OnBtnTimerStopClick -> stopTimer()
-            is MainScreenEvent.OnBtnTimerResetClick -> resetTimer()
-            is MainScreenEvent.OnBtnTimerPauseClick -> pauseTimer()
-            is MainScreenEvent.OnBtnTimerResumeClick -> resumeTimer()
+            // TODO: вынести ивенты таймера в sections.timer
+            is MainScreenEvent.OnStartClick -> startTimer()
+            is MainScreenEvent.OnStopClick -> stopTimer()
+            is MainScreenEvent.OnResetClick -> resetTimer()
+            is MainScreenEvent.OnPauseClick -> pauseTimer()
+            is MainScreenEvent.OnResumeClick -> resumeTimer()
+            // TODO: вынести -----
+
+            MainScreenEvent.OnSpotifyAuthRequest -> TODO()
         }
     }
 

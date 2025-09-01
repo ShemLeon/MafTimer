@@ -35,7 +35,7 @@ import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.components.CustomCircle
 import com.leoevg.maftimer.presenter.components.DialDivider
 import com.leoevg.maftimer.presenter.components.Indicators
-import com.leoevg.maftimer.presenter.util.PlayerContainer
+import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
 import com.leoevg.maftimer.presenter.components.ProgressBar
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
@@ -130,7 +130,7 @@ private fun MainScreenContent(
                                     onLongPress = {
                                         context.performStrongVibration()       // «сильная» вибрация
                                         if (state.isRunning) {
-                                            onEvent(MainScreenEvent.OnBtnTimerPauseClick)
+                                            onEvent(MainScreenEvent.OnPauseClick)
                                         }
                                     },
                                     onTap = {
@@ -140,13 +140,13 @@ private fun MainScreenContent(
                                         )
                                         when {
                                             state.isFinished -> {
-                                                onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                                                onEvent(MainScreenEvent.OnBtnTimerStartClick)
+                                                onEvent(MainScreenEvent.OnResetClick)
+                                                onEvent(MainScreenEvent.OnStartClick)
                                             }
 
-                                            state.isRunning -> onEvent(MainScreenEvent.OnBtnTimerResetClick)
-                                            state.isPaused -> onEvent(MainScreenEvent.OnBtnTimerResumeClick)
-                                            else -> onEvent(MainScreenEvent.OnBtnTimerStartClick)
+                                            state.isRunning -> onEvent(MainScreenEvent.OnResetClick)
+                                            state.isPaused -> onEvent(MainScreenEvent.OnResumeClick)
+                                            else -> onEvent(MainScreenEvent.OnStartClick)
                                         }
                                     }
                                 )

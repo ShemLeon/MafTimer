@@ -1,9 +1,10 @@
 package com.leoevg.maftimer.presenter.screens.main
 
 sealed interface MainScreenEvent {
-    object OnBtnTimerStartClick: MainScreenEvent
-    object OnBtnTimerStopClick: MainScreenEvent
-    object OnBtnTimerResetClick: MainScreenEvent
-    object OnBtnTimerPauseClick: MainScreenEvent
-    object OnBtnTimerResumeClick: MainScreenEvent
+    object OnStartClick: MainScreenEvent
+    object OnStopClick: MainScreenEvent
+    object OnResetClick: MainScreenEvent
+    object OnPauseClick: MainScreenEvent
+    object OnResumeClick: MainScreenEvent
+    object OnSpotifyAuthRequest: MainScreenEvent
 }
