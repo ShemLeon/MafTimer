@@ -1,15 +1,12 @@
 package com.leoevg.maftimer.presenter.screens.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,24 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.leoevg.maftimer.R
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.CustomCircle
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.DialDivider
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.Indicators
 import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
+import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
+import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
+import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.ProgressBar
 import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
-import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable
 fun MainScreen(
@@ -42,10 +33,12 @@ fun MainScreen(
     onSpotifyAuthRequest: () -> Unit = {}
 ) {
     val viewModel = hiltViewModel<MainScreenViewModel>()
-    val state by viewModel.state.collectAsState()
+    val timerViewModel = hiltViewModel<TimerViewModel>()
+    val timerState by timerViewModel.state.collectAsState()
 
     MainScreenContent(
-        state = state,
+        timerState = TimerState,
+        onTimerEvent = timerViewModel::onEvent,
         onEvent = viewModel::onEvent,
         onSpotifyAuthRequest = onSpotifyAuthRequest
     )
@@ -53,7 +46,8 @@ fun MainScreen(
 
 @Composable
 private fun MainScreenContent(
-    state: MainScreenState,
+    timerState: TimerState,
+    onTimerEvent: (TimerEvent) -> Unit,
     onEvent: (MainScreenEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit = {}
 ) {
@@ -63,18 +57,13 @@ private fun MainScreenContent(
     // Определяем цвета для градиента
     val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
-    val hapticFeedback = LocalHapticFeedback.current   // вибрация при нажатии
-    val context = LocalContext.current
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        topGradientColor,
-                        bottomGradientColor
-                    )
+                    colors = listOf(topGradientColor, bottomGradientColor)
                 )
             )
             .padding(5.dp)
@@ -89,7 +78,10 @@ private fun MainScreenContent(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                TimerAssembly()
+                TimerAssembly(
+                    state = timerState,
+                    onEvent = onTimerEvent,
+                )
             }
         }
         // Блок для плеера

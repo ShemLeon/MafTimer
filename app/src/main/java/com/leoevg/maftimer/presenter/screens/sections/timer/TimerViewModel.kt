@@ -11,17 +11,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class CustomTimerViewModel: ViewModel() {
+class TimerViewModel: ViewModel() {
     private var timerJob: Job? = null //корутина, которая будет работать в фоновом потоке
-    private val _state = MutableStateFlow(CustomTimerState())
-    val state: StateFlow<CustomTimerState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(TimerState(totalSeconds = 6)) // здесь тестируем таймер (в рабочей версии 60 секунд)
+    val state: StateFlow<TimerState> = _state.asStateFlow()
 
-    fun onEvent(event: CustomTimerEvent) {
+    fun onEvent(event: TimerEvent) {
         when (event) {
-            CustomTimerEvent.OnStartClick -> startTimer()
-            CustomTimerEvent.OnResetClick -> resetTimer()
-            CustomTimerEvent.OnPauseClick -> pauseTimer()
-            CustomTimerEvent.OnResumeClick -> resumeTimer()
+            TimerEvent.OnStartClick -> startTimer()
+            TimerEvent.OnResetClick -> resetTimer()
+            TimerEvent.OnPauseClick -> pauseTimer()
+            TimerEvent.OnResumeClick -> resumeTimer()
         }
     }
 
@@ -29,7 +29,6 @@ class CustomTimerViewModel: ViewModel() {
         // 1. Если корутина активна - защита от повторного запуска
         if (timerJob?.isActive == true) return
         // 2. Если таймер завершил свою работу (isFinished = true), сбрасываем прогресс на 0
-        // Используется метод copy() для создания нового состояния с измененными полями
         if (_state.value.isFinished)
             _state.value = _state.value.copy(progressFraction = 0f, isPaused = false)
         // 3. Установка состояния запуска: таймер запущен и не на паузе
@@ -63,7 +62,14 @@ class CustomTimerViewModel: ViewModel() {
     }
 
     private fun resetTimer(){
-
+        timerJob?.cancel()
+        timerJob = null
+        _state.value = _state.value.copy(
+            progressFraction = 0f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false
+        )
     }
     private fun pauseTimer(){
         if (_state.value.isRunning && !_state.value.isPaused) {
@@ -74,7 +80,10 @@ class CustomTimerViewModel: ViewModel() {
     }
 
     private fun resumeTimer(){
-
+        if (_state.value.isPaused && !_state.value.isRunning){
+            _state.value = _state.value.copy(isPaused = false)
+            startTimer() // Продолжаем с текущей позиции
+        }
     }
 }
 

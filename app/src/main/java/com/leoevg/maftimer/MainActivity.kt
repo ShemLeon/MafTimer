@@ -19,21 +19,21 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var spotifyAuthManager: SpotifyAuthManager
-    @Inject
-    lateinit var spotifyRepository: SpotifyRepository
+//    @Inject
+//    lateinit var spotifyAuthManager: SpotifyAuthManager
+//    @Inject
+//    lateinit var spotifyRepository: SpotifyRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Log.d("MainActivity", "onCreate called")
 
-        // Устанавливаем callback для получения токена
-        spotifyAuthManager.onTokenReceived = { token ->
-            Log.d("MainActivity", "Token received in callback: ${token.take(10)}...")
-            spotifyRepository.setAccessToken(token)
-        }
+//        // Устанавливаем callback для получения токена
+//        spotifyAuthManager.onTokenReceived = { token ->
+//            Log.d("MainActivity", "Token received in callback: ${token.take(10)}...")
+//            spotifyRepository.setAccessToken(token)
+//        }
 
 //        // Проверяем intent при запуске
 //        intent?.let {
@@ -43,12 +43,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MafTimerTheme {
-                HideSystemBars()
+                HideSystemBars() // Добавить здесь
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MainNavHost(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier.padding(innerPadding)
+                        ,
                         onSpotifyAuthRequest = {
-                            spotifyAuthManager.startAuth(this)
+                           // spotifyAuthManager.startAuth(this)
                         }
                     )
                 }

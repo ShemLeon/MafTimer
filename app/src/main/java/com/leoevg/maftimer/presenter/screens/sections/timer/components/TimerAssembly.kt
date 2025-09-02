@@ -12,17 +12,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.R
-import com.leoevg.maftimer.presenter.screens.main.MainScreenEvent
+import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
+import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.CustomCircle
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.DialDivider
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.ProgressBar
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable
-fun TimerAssembly() {
+fun TimerAssembly(
+    state: TimerState,
+    onEvent: (TimerEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val screenHeightDp = configuration.screenHeightDp.dp
     Box(
         modifier = Modifier
             .fillMaxWidth(0.9f)
@@ -49,7 +59,7 @@ fun TimerAssembly() {
                         onLongPress = {
                             context.performStrongVibration()       // «сильная» вибрация
                             if (state.isRunning) {
-                                onEvent(MainScreenEvent.OnPauseClick)
+                                onEvent(TimerEvent.OnPauseClick)
                             }
                         },
                         onTap = {
@@ -59,13 +69,13 @@ fun TimerAssembly() {
                             )
                             when {
                                 state.isFinished -> {
-                                    onEvent(MainScreenEvent.OnResetClick)
-                                    onEvent(MainScreenEvent.OnStartClick)
+                                    onEvent(TimerEvent.OnResetClick)
+                                    onEvent(TimerEvent.OnStartClick)
                                 }
 
-                                state.isRunning -> onEvent(MainScreenEvent.OnResetClick)
-                                state.isPaused -> onEvent(MainScreenEvent.OnResumeClick)
-                                else -> onEvent(MainScreenEvent.OnStartClick)
+                                state.isRunning -> onEvent(TimerEvent.OnResetClick)
+                                state.isPaused -> onEvent(TimerEvent.OnResumeClick)
+                                else -> onEvent(TimerEvent.OnStartClick)
                             }
                         }
                     )

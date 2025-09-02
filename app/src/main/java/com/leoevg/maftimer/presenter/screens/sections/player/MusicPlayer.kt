@@ -30,13 +30,13 @@ fun PlayerContainer(
     onSpotifyAuthRequest: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    val isAuthorized = viewModel.isAuthorized()
-
-    LaunchedEffect(Unit) {
-        if (isAuthorized) {
-            viewModel.refreshPlayback()
-        }
-    }
+//  val isAuthorized = viewModel.isAuthorized() раскоментить после теста
+    val isAuthorized = false
+//    LaunchedEffect(Unit) {
+//        if (isAuthorized) {
+//            viewModel.refreshPlayback()
+//        }
+//    }
 
     Column(
         modifier = Modifier
@@ -118,7 +118,7 @@ fun PlayerContainer(
                 onValueChange = { newValue ->
                     if (isAuthorized) {
                         val newPosition = (newValue * state.durationMs).toLong()
-                        viewModel.seekTo(newPosition)
+//                        viewModel.seekTo(newPosition)
                     }
                 },
                 modifier = Modifier
@@ -174,7 +174,7 @@ fun PlayerContainer(
                     .rotate(180f)
                     .size(buttonSize.dp)
                     .clickable {
-                        if (isAuthorized) viewModel.previous()
+//                        if (isAuthorized) viewModel.previous()
                     },
                 contentScale = ContentScale.Fit
             )
@@ -188,7 +188,7 @@ fun PlayerContainer(
                     .size((buttonSize * 1.1).dp)
                     .clickable {
                         if (isAuthorized) {
-                            if (state.isPlaying) viewModel.pause() else viewModel.play()
+//                            if (state.isPlaying) viewModel.pause() else viewModel.play()
                         }
                     },
                 contentScale = ContentScale.Fit
@@ -202,7 +202,7 @@ fun PlayerContainer(
                 modifier = Modifier
                     .size(buttonSize.dp)
                     .clickable {
-                        if (isAuthorized) viewModel.next()
+//                        if (isAuthorized) viewModel.next()
                     },
                 contentScale = ContentScale.Fit
             )

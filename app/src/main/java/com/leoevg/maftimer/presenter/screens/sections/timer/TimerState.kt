@@ -1,6 +1,6 @@
 package com.leoevg.maftimer.presenter.screens.sections.timer
 
-data class CustomTimerState(
+data class TimerState(
     val totalSeconds: Int = 60,
     val progressFraction: Float = 0f, // от 0 до 1
     val isRunning: Boolean = false,
