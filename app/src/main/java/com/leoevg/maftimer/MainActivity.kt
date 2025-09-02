@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.leoevg.maftimer.data.repository.SpotifyRepository
 import com.leoevg.maftimer.navigation.MainNavHost
+import com.leoevg.maftimer.presenter.util.HideSystemBars
 import com.leoevg.maftimer.ui.theme.MafTimerTheme
 import com.leoevg.maftimer.util.SpotifyAuthManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MafTimerTheme {
+                HideSystemBars()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MainNavHost(
                         modifier = Modifier.padding(innerPadding),
@@ -52,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
     }
 
 //    override fun onNewIntent(intent: Intent) {

@@ -33,8 +33,6 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun startTimer() {
-  //    android.util.Log.d("GsonTest", com.leoevg.maftimer.presenter.util.GsonTest.testGson())
-
         if (timerJob?.isActive == true) return
         if (_state.value.isFinished){
             _state.value = _state.value.copy(progressFraction = 0f, isPaused = false)
