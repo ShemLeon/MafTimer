@@ -19,7 +19,8 @@ import com.leoevg.maftimer.R
 @Composable
 fun DialDivider(
     angleDegrees: Int,
-    color: Color
+    color: Color,
+    alpha: Float = 1.0f
 ){
     // Константы габаритов и вдавливания внутрь циферблата
     val inset = 10.dp
@@ -37,12 +38,12 @@ fun DialDivider(
         Image(
             painter = painterResource(id = R.drawable.rectangle),
             contentDescription = "divider",
-            colorFilter = ColorFilter.tint(color),
+            colorFilter = ColorFilter.tint(color.copy(alpha = alpha)),
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .align(Alignment.TopCenter)     // радиальный маркер
             //  .offset(y = (0).dp)             // регулировка внутрь/наружу;
-                .size(width = 4.dp, height = 12.dp)
+                .size(width = width, height = height) // Used defined constants
         )
     }
 }

@@ -21,6 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.Indicators
 import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
+import com.leoevg.maftimer.presenter.screens.sections.timer.Timer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
@@ -37,7 +38,7 @@ fun MainScreen(
     val timerState by timerViewModel.state.collectAsState()
 
     MainScreenContent(
-        timerState = TimerState,
+        timerState = timerState,
         onTimerEvent = timerViewModel::onEvent,
         onEvent = viewModel::onEvent,
         onSpotifyAuthRequest = onSpotifyAuthRequest
@@ -78,7 +79,7 @@ private fun MainScreenContent(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                TimerAssembly(
+                Timer(
                     state = timerState,
                     onEvent = onTimerEvent,
                 )
@@ -102,21 +103,11 @@ private fun MainScreenContent(
 
 @Preview(showBackground = true)
 @Composable
-fun TimerScreenPreview() {
+private fun MainScreenPreview() {
     MainScreenContent(
-        state = MainScreenState(
-            progressFraction = 0.3f,
-            isRunning = true
-        ),
-        onEvent = { it -> }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TimerScreenPreviewStart() {
-    MainScreenContent(
-        state = MainScreenState(progressFraction = 0f, isRunning = false),
-        onEvent = { it -> }
+        timerState = TimerState(),
+        onTimerEvent = {},
+        onEvent = {},
+        onSpotifyAuthRequest = {}
     )
 }

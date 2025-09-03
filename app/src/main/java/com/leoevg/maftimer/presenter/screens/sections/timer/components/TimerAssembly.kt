@@ -15,6 +15,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
@@ -98,8 +99,39 @@ fun TimerAssembly(
         }
         // Разделители
         DialDivider(angleDegrees = 0, color = Color(0x80000000))
-        DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))
-        DialDivider(angleDegrees = 60, color = Color(0x80fc520d))
+        DialDivider(angleDegrees = 300, color = Color(0xFFCDDC39), alpha = 0.5f) // 10 sec
+         DialDivider(angleDegrees = 240, color = Color(0xFFCDDC39), alpha = 0.5f) // 20 sec
+        DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))  // 30 sec
+        DialDivider(angleDegrees = 120, color = Color(0xFFCDDC39), alpha = 0.5f)  // 40 sec
+        DialDivider(angleDegrees = 60, color = Color(0x80fc520d))   // 50 sec
 
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TimerAssemblyPreview() {
+    TimerAssembly(
+        state = TimerState(
+            progressFraction = 0.5f,
+            isRunning = true,
+            isPaused = false,
+            isFinished = false
+        ),
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TimerAssemblyFullPreview() {
+    TimerAssembly(
+        state = TimerState(
+            progressFraction = 0.1f,
+            isRunning = true,
+            isPaused = false,
+            isFinished = false
+        ),
+        onEvent = {}
+    )
 }
