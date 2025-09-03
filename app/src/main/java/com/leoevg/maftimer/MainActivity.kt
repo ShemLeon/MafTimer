@@ -17,6 +17,7 @@ import com.leoevg.maftimer.util.SpotifyAuthManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 //    @Inject
@@ -44,13 +45,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             MafTimerTheme {
                 HideSystemBars() // Добавить здесь
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     MainNavHost(
-                        modifier = Modifier.padding(innerPadding)
-                        ,
-                        onSpotifyAuthRequest = {
-                           // spotifyAuthManager.startAuth(this)
-                        }
+//                        onSpotifyAuthRequest = {
+//                           // spotifyAuthManager.startAuth(this)
+//                        }
                     )
                 }
             }

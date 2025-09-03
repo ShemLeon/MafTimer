@@ -19,14 +19,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.Indicators
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
 import com.leoevg.maftimer.presenter.screens.sections.timer.Timer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
 import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
+
 
 @Composable
 fun MainScreen(
@@ -93,8 +93,7 @@ private fun MainScreenContent(
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Три маленьких кружочка сверху
-            Indicators()
+            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
             PlayerContainer(onSpotifyAuthRequest = onSpotifyAuthRequest)
         }
     }

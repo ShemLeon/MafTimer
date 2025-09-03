@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Indicators(){
+fun TypeOfPlayerIndicators(){
     Row(
         modifier = Modifier
             .padding(bottom = 10.dp),
@@ -30,5 +30,5 @@ fun Indicators(){
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF121212)
 fun IndicatorsPreview() {
-    Indicators()
+    TypeOfPlayerIndicators()
 }

@@ -2,7 +2,7 @@ package com.leoevg.maftimer.navigation
 
 import kotlinx.serialization.Serializable
 
-interface NavigationPaths {
-    @Serializable data object TimerSealed: NavigationPaths
-    @Serializable data object SettingsSealed: NavigationPaths
+sealed interface NavigationPaths {
+    @Serializable object MainScreenSealed: NavigationPaths
+    @Serializable object SettingsScreenSealed: NavigationPaths
 }
