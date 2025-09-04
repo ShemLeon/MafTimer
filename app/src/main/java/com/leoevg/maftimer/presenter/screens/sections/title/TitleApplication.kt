@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,12 +21,11 @@ import androidx.compose.ui.unit.sp
 import com.leoevg.maftimer.R
 
 @Composable
-fun TitleApplication(){
+fun TitleApplication() {
     Row(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)
-        ,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -42,7 +42,7 @@ fun TitleApplication(){
             contentDescription = "Settings",
             tint = Color(0xFFFFFFFF),
             modifier = Modifier
-                .fillMaxSize(0.45f)
+                .size(30.dp)
                 .padding()
                 .clickable {
 //                        if (isAuthorized) viewModel.previous()

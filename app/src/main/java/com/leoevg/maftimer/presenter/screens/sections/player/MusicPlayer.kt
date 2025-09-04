@@ -21,22 +21,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerContainer(
+    onSpotifyAuthRequest: () -> Unit = {},
     viewModel: MusicPlayerViewModel = hiltViewModel(),
-    onSpotifyAuthRequest: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-//  val isAuthorized = viewModel.isAuthorized() раскоментить после теста
-    val isAuthorized = false
-//    LaunchedEffect(Unit) {
-//        if (isAuthorized) {
-//            viewModel.refreshPlayback()
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        if (state.isAuthorized) {
+            viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -81,23 +80,13 @@ fun PlayerContainer(
                     .size(56.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
-                        if (isAuthorized) {
-                            viewModel.refreshPlayback()
+                        if (state.isAuthorized) {
+                            viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
                         } else {
                             onSpotifyAuthRequest()
                         }
                     },
                 contentScale = ContentScale.Crop
-            )
-        }
-
-        // Показываем статус авторизации
-        if (!isAuthorized) {
-            Text(
-                text = "Нажмите на Spotify для авторизации",
-                color = Color.Yellow,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 
@@ -214,4 +203,14 @@ private fun formatTime(milliseconds: Long): String {
     val minutes = (milliseconds / 1000) / 60
     val seconds = (milliseconds / 1000) % 60
     return String.format("%d:%02d", minutes, seconds)
+}
+
+
+// TODO - пофиксить превью в плеере.
+@Preview(showBackground = true)
+@Composable
+private fun PlayerContainerPreview() {
+    PlayerContainer(
+        onSpotifyAuthRequest = {}
+    )
 }

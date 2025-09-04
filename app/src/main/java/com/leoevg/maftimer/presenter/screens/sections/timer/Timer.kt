@@ -2,12 +2,8 @@ package com.leoevg.maftimer.presenter.screens.sections.timer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
-import kotlin.Int
 
 @Composable
 fun Timer(

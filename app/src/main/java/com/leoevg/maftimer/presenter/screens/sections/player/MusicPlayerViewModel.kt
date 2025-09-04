@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +18,6 @@ class MusicPlayerViewModel @Inject constructor(
     private val authManager: SpotifyAuthManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(MusicPlayerState())
-    // исправится само когда добавим параметры по умолчанию
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
 
 
@@ -28,47 +28,109 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    fun sendEvent(event: MusicPlayerEvent){
-        // Todo: обработать евент по шаблону
-    }
-
-    fun play() {
-        viewModelScope.launch {
-            spotifyRepository.play()
+    fun sendEvent(event: MusicPlayerEvent) {
+        when (event) {
+            is MusicPlayerEvent.OnSpotifyAuthRequest -> checkAuthorization()
+            is MusicPlayerEvent.OnStartBtnClicked -> play()
+            is MusicPlayerEvent.OnPauseBtnClicked -> pause()
+            is MusicPlayerEvent.OnNextSongBtnClicked -> next()
+            is MusicPlayerEvent.OnPreviousSongBtnClicked -> previous()
+            is MusicPlayerEvent.OnSeekTo -> seekTo(event.positionMs)
+            is MusicPlayerEvent.OnRefreshPlayback -> refreshPlayback()
         }
     }
 
-    fun pause() {
+    private fun checkAuthorization() {
+        val isAuthorized = authManager.getStoredToken() != null
+        _state.update { it.copy(isAuthorized = isAuthorized) }
+    }
+
+    private fun play() {
+        if (!state.value.isAuthorized) return // защита
+        // отработка корутины проигрывания музыки
         viewModelScope.launch {
-            spotifyRepository.pause()
+            try {
+                _state.update { it.copy(isLoading = true) }
+                spotifyRepository.play()
+                _state.update { it.copy(isPlaying = true, isLoading = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
         }
     }
 
-    fun next() {
+    private fun pause() {
+        if (!state.value.isAuthorized) return
         viewModelScope.launch {
-            spotifyRepository.next()
+            try {
+                _state.update { it.copy(isLoading = true) }
+                spotifyRepository.pause()
+                _state.update { it.copy(isPlaying = false, isLoading = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
         }
     }
 
-    fun previous() {
+    private fun next() {
+        if (!state.value.isAuthorized) return
         viewModelScope.launch {
-            spotifyRepository.previous()
+            try {
+                _state.update { it.copy(isLoading = true) }
+                spotifyRepository.next()
+                refreshPlayback()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
         }
     }
 
-    fun seekTo(positionMs: Long) {
+
+    private fun previous() {
+        if (!state.value.isAuthorized) return
+
         viewModelScope.launch {
-            spotifyRepository.seekTo(positionMs)
+            try {
+                _state.update { it.copy(isLoading = true) }
+                spotifyRepository.previous()
+                refreshPlayback()
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
         }
     }
 
-    fun refreshPlayback() {
+    private fun seekTo(positionMs: Long) {
+        if (!state.value.isAuthorized) return
+
         viewModelScope.launch {
-            spotifyRepository.getCurrentPlayback()
+            try {
+                spotifyRepository.seekTo(positionMs)
+                _state.update { it.copy(progressMs = positionMs) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+    private fun refreshPlayback() {
+        if (!state.value.isAuthorized) return
+
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true) }
+                val playback = spotifyRepository.getCurrentPlayback()
+                // Здесь нужно обновить состояние на основе полученных данных
+                // _state.update { it.copy(...) }
+                _state.update { it.copy(isLoading = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+            }
         }
     }
 
-    fun isAuthorized(): Boolean {
-        return authManager.getStoredToken() != null
+    fun clearError() {
+        _state.update { it.copy(error = null) }
     }
+
+
 }

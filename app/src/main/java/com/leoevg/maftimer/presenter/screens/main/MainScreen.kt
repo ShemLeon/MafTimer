@@ -31,10 +31,10 @@ import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
-    onSpotifyAuthRequest: () -> Unit = {}
+    onSpotifyAuthRequest: () -> Unit = {},
+    viewModel: MainScreenViewModel = hiltViewModel(),
+    timerViewModel: TimerViewModel = hiltViewModel()
 ) {
-    val viewModel = hiltViewModel<MainScreenViewModel>()
-    val timerViewModel = hiltViewModel<TimerViewModel>()
     val timerState by timerViewModel.state.collectAsState()
 
     MainScreenContent(
@@ -102,11 +102,27 @@ private fun MainScreenContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun MainScreenPreview() {
+private fun MainScreenContentPreview() {
     MainScreenContent(
-        timerState = TimerState(),
-        onTimerEvent = {},
-        onEvent = {},
+        timerState = TimerState(
+            totalSeconds = 60,
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false
+        ),
+        onTimerEvent = { },
+        onEvent = { },
         onSpotifyAuthRequest = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenPreview() {
+
+    MainScreen(
+        navigate = { },
+        onSpotifyAuthRequest = { },
     )
 }

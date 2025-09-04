@@ -115,7 +115,6 @@ class SpotifyRepository @Inject constructor(
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
             }
-
             Log.d("SpotifyRepository", "Skipping to previous...")
             val response = spotifyApi.skipToPrevious(getAuthHeader())
             if (response.isSuccessful) {
