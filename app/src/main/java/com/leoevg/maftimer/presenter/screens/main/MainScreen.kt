@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.TypeOfPlayerIndicators
-import com.leoevg.maftimer.presenter.screens.sections.player.PlayerContainer
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 import com.leoevg.maftimer.presenter.screens.sections.timer.Timer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
@@ -94,7 +94,7 @@ private fun MainScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
-            PlayerContainer(onSpotifyAuthRequest = onSpotifyAuthRequest)
+            MusicPlayer(onSpotifyAuthRequest = onSpotifyAuthRequest)
         }
     }
 }

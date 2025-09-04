@@ -19,10 +19,8 @@ class MusicPlayerViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(MusicPlayerState())
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
-
-
+    // Устанавливаем токен при инициализации
     init {
-        // Устанавливаем токен при инициализации
         authManager.getStoredToken()?.let { token ->
             spotifyRepository.setAccessToken(token)
         }
