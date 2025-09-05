@@ -11,12 +11,11 @@ import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
 fun PlayPauseButton(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel
+    onEvent: (MusicPlayerEvent) -> Unit
 ) {
     Image(
         painter = painterResource(
@@ -31,8 +30,8 @@ fun PlayPauseButton(
             .clickable {
                 if (state.isAuthorized) {
                     if (state.isPlaying)
-                        viewModel.sendEvent(MusicPlayerEvent.OnPauseBtnClicked)
-                    else viewModel.sendEvent(MusicPlayerEvent.OnStartBtnClicked)
+                        onEvent(MusicPlayerEvent.OnPauseBtnClicked)
+                    else onEvent(MusicPlayerEvent.OnStartBtnClicked)
                 }
             },
         contentScale = ContentScale.Fit

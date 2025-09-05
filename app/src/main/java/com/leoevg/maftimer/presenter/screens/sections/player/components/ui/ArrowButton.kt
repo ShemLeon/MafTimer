@@ -20,17 +20,17 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewMode
 @Composable
 fun ArrowButton(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel,
+    onEvent: (MusicPlayerEvent) -> Unit,
     isNext: Boolean = false
 ) {
     ArrowButtonContent(
         isNext = isNext,
         isAuthorized = state.isAuthorized,
         onNextClick = {
-            viewModel.sendEvent(MusicPlayerEvent.OnNextSongBtnClicked)
+            onEvent(MusicPlayerEvent.OnNextSongBtnClicked)
         },
         onPreviousClick = {
-            viewModel.sendEvent(MusicPlayerEvent.OnPreviousSongBtnClicked)
+            onEvent(MusicPlayerEvent.OnPreviousSongBtnClicked)
         }
     )
 }

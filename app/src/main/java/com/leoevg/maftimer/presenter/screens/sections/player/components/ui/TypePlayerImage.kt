@@ -18,7 +18,7 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewMode
 @Composable
 fun TypePlayerImage(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel,
+    onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
     Image(
@@ -31,7 +31,7 @@ fun TypePlayerImage(
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 if (state.isAuthorized) {
-                    viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
+                    onEvent(MusicPlayerEvent.OnRefreshPlayback)
                 } else {
                     onSpotifyAuthRequest()
                 }
