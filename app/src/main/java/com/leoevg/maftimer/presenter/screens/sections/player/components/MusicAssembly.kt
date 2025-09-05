@@ -15,9 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.ArrowButton
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CheckSpotifyAuthorized
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomSlider
@@ -27,9 +28,9 @@ import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.TextP
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.TypePlayerImage
 
 @Composable
-fun MusicPlayerContent(
+fun MusicAssembly(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel,
+    onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
     Column(
@@ -48,7 +49,7 @@ fun MusicPlayerContent(
         ) {
             SongInfo(state) // Информация о песне
             Spacer(modifier = Modifier.weight(1f))
-            TypePlayerImage(state, viewModel, onSpotifyAuthRequest)
+            TypePlayerImage(state, onEvent, onSpotifyAuthRequest)
         }
         // Показываем статус авторизации
         CheckSpotifyAuthorized(state)
@@ -58,7 +59,7 @@ fun MusicPlayerContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextProgressSong(state)
-            CustomSlider(state, viewModel)
+            CustomSlider(state, onEvent)
             TextDurationSong(state)
         }
         // Кнопки управления
@@ -72,10 +73,26 @@ fun MusicPlayerContent(
             // previous song
             ArrowButton(state = state, viewModel = viewModel)
             Spacer(modifier = Modifier.width(20.dp))
-            PlayPauseButton(state, viewModel)
+            PlayPauseButton(state, onEvent)
             Spacer(modifier = Modifier.width(20.dp))
             // next song
             ArrowButton(isNext = true, state = state, viewModel = viewModel)
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+private fun MusicAssemblyPreview() {
+    MusicAssembly(
+        state = MusicPlayerState(
+            isAuthorized = true,
+            singer = "Ivo Bobul",
+            title = "Balalay",
+            isPlaying = true,
+            progressMs = 125000L,
+            durationMs = 180000L
+        ),
+        viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+        onSpotifyAuthRequest = {}
+    )
 }

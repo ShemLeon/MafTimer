@@ -15,13 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun RowScope.CustomSlider(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel
+    onEvent: (MusicPlayerEvent) -> Unit
 ) {
     Slider(
         value = if (state.durationMs > 0)
@@ -30,7 +29,7 @@ fun RowScope.CustomSlider(
         onValueChange = { newValue ->
             if (state.isAuthorized) {
                 val newPosition = (newValue * state.durationMs).toLong()
-                viewModel.sendEvent(MusicPlayerEvent.OnSeekTo(newPosition))
+                onEvent(MusicPlayerEvent.OnSeekTo(newPosition))
             }
         },
         modifier = Modifier
