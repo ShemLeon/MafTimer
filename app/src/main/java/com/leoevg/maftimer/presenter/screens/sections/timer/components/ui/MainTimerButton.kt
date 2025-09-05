@@ -14,7 +14,10 @@ import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 
 @Composable
-fun MainTimerButton(state: TimerState = TimerState(), screenHeightDp: Dp = 100.dp) {
+fun MainTimerButton(
+    state: TimerState = TimerState(),
+    screenHeightDp: Dp = 100.dp
+) {
     Icon(
         painter = painterResource(
             id = if (state.isRunning) R.drawable.btn_renew

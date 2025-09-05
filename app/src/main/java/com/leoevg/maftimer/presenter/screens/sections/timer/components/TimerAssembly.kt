@@ -44,7 +44,7 @@ fun TimerAssembly(
         ProgressBar(
             percentage = state.progressFraction, // сектор от 60
             number = 60,           // текст внутри = seconds
-            color = Color.Green,
+            color = Color(0x8078F900),
             animDuration = 100, // 10 секунд.
             strokeWidth = 12.dp
         )

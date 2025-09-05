@@ -1,11 +1,10 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -15,26 +14,25 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
-fun ArrowButton(
+fun PlayPauseButton(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel,
-    isNext: Boolean = false
+    viewModel: MusicPlayerViewModel
 ) {
     Image(
-        painter = painterResource(R.drawable.btn_strelki),
-        contentDescription = if (isNext) "Next song" else "Previous song",
+        painter = painterResource(
+            if (state.isPlaying)
+                R.drawable.btn_pause
+            else
+                R.drawable.btn_start
+        ),
+        contentDescription = if (state.isPlaying) "pause" else "play",
         modifier = Modifier
-            .rotate(
-                if (isNext) 0f
-                else 180f
-            )
-            .size(40.dp)
+            .size((40 * 1.1).dp)
             .clickable {
                 if (state.isAuthorized) {
-                    viewModel.sendEvent(
-                        if (isNext) MusicPlayerEvent.OnNextSongBtnClicked
-                        else MusicPlayerEvent.OnPreviousSongBtnClicked
-                    )
+                    if (state.isPlaying)
+                        viewModel.sendEvent(MusicPlayerEvent.OnPauseBtnClicked)
+                    else viewModel.sendEvent(MusicPlayerEvent.OnStartBtnClicked)
                 }
             },
         contentScale = ContentScale.Fit

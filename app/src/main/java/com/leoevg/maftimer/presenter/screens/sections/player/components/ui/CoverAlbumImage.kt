@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size

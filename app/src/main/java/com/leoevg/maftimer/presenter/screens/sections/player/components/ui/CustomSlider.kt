@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -46,7 +46,10 @@ fun RowScope.CustomSlider(
             Box(
                 modifier = Modifier
                     .size(13.dp)
-                    .background(Color.White, CircleShape)
+                    .background(
+                        color = Color(0x80FFFFFF),
+                        CircleShape
+                    )
             )
         },
         track = {

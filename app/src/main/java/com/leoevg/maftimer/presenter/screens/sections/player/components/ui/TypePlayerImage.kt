@@ -1,10 +1,12 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -14,27 +16,26 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
-fun PlayPauseButton(
+fun TypePlayerImage(
     state: MusicPlayerState,
-    viewModel: MusicPlayerViewModel
+    viewModel: MusicPlayerViewModel,
+    onSpotifyAuthRequest: () -> Unit
 ) {
     Image(
         painter = painterResource(
-            if (state.isPlaying)
-                R.drawable.btn_pause
-            else
-                R.drawable.btn_start
+            R.drawable.muzdef
         ),
-        contentDescription = if (state.isPlaying) "pause" else "play",
+        contentDescription = "TypePlayerImg",
         modifier = Modifier
-            .size((40 * 1.1).dp)
+            .size(56.dp)
+            .clip(RoundedCornerShape(8.dp))
             .clickable {
                 if (state.isAuthorized) {
-                    if (state.isPlaying)
-                        viewModel.sendEvent(MusicPlayerEvent.OnPauseBtnClicked)
-                    else viewModel.sendEvent(MusicPlayerEvent.OnStartBtnClicked)
+                    viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
+                } else {
+                    onSpotifyAuthRequest()
                 }
             },
-        contentScale = ContentScale.Fit
+        contentScale = ContentScale.Crop
     )
 }
