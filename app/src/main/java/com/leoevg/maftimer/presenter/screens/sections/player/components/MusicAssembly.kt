@@ -71,12 +71,12 @@ fun MusicAssembly(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // previous song
-            ArrowButton(state = state, viewModel = viewModel)
+            ArrowButton(state = state, onEvent = onEvent)
             Spacer(modifier = Modifier.width(20.dp))
             PlayPauseButton(state, onEvent)
             Spacer(modifier = Modifier.width(20.dp))
             // next song
-            ArrowButton(isNext = true, state = state, viewModel = viewModel)
+            ArrowButton(isNext = true, state = state, onEvent = onEvent)
         }
     }
 }
@@ -92,7 +92,7 @@ private fun MusicAssemblyPreview() {
             progressMs = 125000L,
             durationMs = 180000L
         ),
-        viewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+        onEvent = {},
         onSpotifyAuthRequest = {}
     )
 }

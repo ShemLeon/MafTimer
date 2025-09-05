@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
 fun TypePlayerImage(
@@ -23,7 +23,7 @@ fun TypePlayerImage(
 ) {
     Image(
         painter = painterResource(
-            R.drawable.muzdef
+            R.drawable.spotify
         ),
         contentDescription = "TypePlayerImg",
         modifier = Modifier
@@ -37,5 +37,22 @@ fun TypePlayerImage(
                 }
             },
         contentScale = ContentScale.Crop
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TypePlayerImagePreview() {
+    TypePlayerImage(
+        state = MusicPlayerState(
+            isAuthorized = true,
+            singer = "Ivo Bobul",
+            title = "Balalay",
+            isPlaying = true,
+            progressMs = 125000L,
+            durationMs = 180000L
+        ),
+        onEvent = {},
+        onSpotifyAuthRequest = {}
     )
 }

@@ -28,7 +28,11 @@ fun MainTimerButton(
         tint = Color.Black,
         modifier = Modifier
             .fillMaxSize(0.45f)
-            .offset(x = if (state.isRunning || state.isPaused) 0.dp else (screenHeightDp * 0.015f))
+            .offset(
+                x =
+                    if (state.isRunning || state.isPaused) 0.dp
+                    else (screenHeightDp * 0.015f)
+            )
     )
 }
 

@@ -19,7 +19,7 @@ fun MusicPlayer(
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
-    MusicAssembly(state, viewModel, onSpotifyAuthRequest)
+    MusicAssembly(state, onEvent = viewModel::sendEvent, onSpotifyAuthRequest)
 }
 
 

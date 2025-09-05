@@ -53,8 +53,8 @@ fun ArrowButtonContent(
             .size(40.dp)
             .clickable {
                 if (isAuthorized) {
-                    if (isNext) MusicPlayerEvent.OnNextSongBtnClicked
-                    else MusicPlayerEvent.OnPreviousSongBtnClicked
+                    if (isNext) onNextClick()
+                    else onPreviousClick()
                 }
             },
         tint = Color(0x80fc520d)
