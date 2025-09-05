@@ -5,4 +5,5 @@ sealed interface TimerEvent {
     object OnResetClick: TimerEvent
     object OnPauseClick: TimerEvent
     object OnResumeClick: TimerEvent
+    object OnTap : TimerEvent
 }

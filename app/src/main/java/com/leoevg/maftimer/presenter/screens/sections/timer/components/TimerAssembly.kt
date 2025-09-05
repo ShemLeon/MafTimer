@@ -1,12 +1,11 @@
 package com.leoevg.maftimer.presenter.screens.sections.timer.components
 
+
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,14 +13,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.CustomCircle
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.DialDivider
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.MainTimerButton
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.ProgressBar
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
@@ -50,7 +48,7 @@ fun TimerAssembly(
             animDuration = 100, // 10 секунд.
             strokeWidth = 12.dp
         )
-        // ───── вместо IconButton { … } ─────
+        // Main Button
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -59,54 +57,33 @@ fun TimerAssembly(
                     detectTapGestures(
                         onLongPress = {
                             context.performStrongVibration()       // «сильная» вибрация
-                            if (state.isRunning) {
-                                onEvent(TimerEvent.OnPauseClick)
-                            }
+                            onEvent(TimerEvent.OnPauseClick)
                         },
                         onTap = {
                             context.performStrongVibration(
                                 durationMs = 120,
                                 amplitude = 100   // заметно мягче, если устройство поддерживает амплитуду
                             )
-                            when {
-                                state.isFinished -> {
-                                    onEvent(TimerEvent.OnResetClick)
-                                    onEvent(TimerEvent.OnStartClick)
-                                }
-
-                                state.isRunning -> onEvent(TimerEvent.OnResetClick)
-                                state.isPaused -> onEvent(TimerEvent.OnResumeClick)
-                                else -> onEvent(TimerEvent.OnStartClick)
-                            }
+                            onEvent(TimerEvent.OnTap)
                         }
                     )
                 },
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(
-                    id = if (state.isRunning) R.drawable.btn_renew
-                    else if (state.isPaused) R.drawable.btn_pause
-                    else R.drawable.btn_start
-                ),
-                contentDescription = if (state.isRunning) "Renew" else "Start",
-                tint = Color.Black,
-                modifier = Modifier
-                    .fillMaxSize(0.45f)
-                    .offset(x = if (state.isRunning || state.isPaused) 0.dp else (screenHeightDp * 0.015f))
-
-            )
+            MainTimerButton(state, screenHeightDp)
         }
         // Разделители
         DialDivider(angleDegrees = 0, color = Color(0x80000000))
         DialDivider(angleDegrees = 300, color = Color(0xFFCDDC39), alpha = 0.5f) // 10 sec
-         DialDivider(angleDegrees = 240, color = Color(0xFFCDDC39), alpha = 0.5f) // 20 sec
+        DialDivider(angleDegrees = 240, color = Color(0xFFCDDC39), alpha = 0.5f) // 20 sec
         DialDivider(angleDegrees = 180, color = Color(0xFF3D5AFE))  // 30 sec
         DialDivider(angleDegrees = 120, color = Color(0xFFCDDC39), alpha = 0.5f)  // 40 sec
         DialDivider(angleDegrees = 60, color = Color(0x80fc520d))   // 50 sec
-
     }
 }
+
+
+
 
 @Preview(showBackground = true)
 @Composable

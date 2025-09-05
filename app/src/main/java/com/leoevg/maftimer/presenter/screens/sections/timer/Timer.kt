@@ -17,8 +17,6 @@ fun Timer(
         modifier = modifier
     )
 }
-//    val viewModel: ViewModel = TimerViewModel()
-//    val state by viewModel.state.collectAsState()
 
 @Preview(showBackground = true)
 @Composable

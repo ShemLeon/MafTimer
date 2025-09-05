@@ -22,6 +22,7 @@ class TimerViewModel: ViewModel() {
             TimerEvent.OnResetClick -> resetTimer()
             TimerEvent.OnPauseClick -> pauseTimer()
             TimerEvent.OnResumeClick -> resumeTimer()
+            TimerEvent.OnTap -> onTap()
         }
     }
 
@@ -85,6 +86,24 @@ class TimerViewModel: ViewModel() {
             startTimer() // Продолжаем с текущей позиции
         }
     }
+
+    fun onTap(){
+        when{
+            _state.value.isFinished -> {
+                onEvent(TimerEvent.OnResetClick)
+                onEvent(TimerEvent.OnStartClick)
+            }
+            _state.value.isRunning -> onEvent(TimerEvent.OnResetClick)
+            _state.value.isPaused -> onEvent(TimerEvent.OnResumeClick)
+            else -> onEvent(TimerEvent.OnStartClick)
+        }
+    }
+
+//    fun onLongPress() {
+//        if (_state.value.isRunning) {
+//            onEvent(TimerEvent.OnPauseClick)
+//        }
+//    }
 }
 
 
