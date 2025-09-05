@@ -130,7 +130,8 @@ class MusicPlayerViewModel @Inject constructor(
                             title = playback.getOrNull()?.item?.name ?: "",
                             artist = playback.getOrNull()?.item?.artists?.get(0)?.name ?: "",
                             // todo: разобраться с артистами
-                            albumCoverUrl = playback.getOrNull()?.item?.album?.images?.get(0)?.url ?: "",
+                            albumCoverUrl = playback.getOrNull()?.item?.album?.images?.get(0)?.url
+                                ?: "",
                         )
                     }
                 } else {
