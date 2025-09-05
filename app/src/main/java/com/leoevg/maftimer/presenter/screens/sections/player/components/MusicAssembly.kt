@@ -80,6 +80,7 @@ fun MusicAssembly(
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun MusicAssemblyPreview() {

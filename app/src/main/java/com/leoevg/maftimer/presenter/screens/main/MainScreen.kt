@@ -26,7 +26,7 @@ import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
-
+import com.leoevg.maftimer.presenter.screens.main.MainScreenEvent
 
 @Composable
 fun MainScreen(
@@ -99,30 +99,19 @@ private fun MainScreenContent(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-private fun MainScreenContentPreview() {
-    MainScreenContent(
-        timerState = TimerState(
-            totalSeconds = 60,
-            progressFraction = 0.3f,
-            isRunning = false,
-            isPaused = false,
-            isFinished = false
-        ),
-        onTimerEvent = { },
-        onEvent = { },
-        onSpotifyAuthRequest = {}
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun MainScreenPreview() {
-
-    MainScreen(
-        navigate = { },
-        onSpotifyAuthRequest = { },
+    MainScreenContent(
+        timerState = TimerState(
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false,
+            remainingSeconds = 42
+        ),
+        onTimerEvent = {},
+        onEvent = { _: MainScreenEvent -> },
+        onSpotifyAuthRequest = {}
     )
 }

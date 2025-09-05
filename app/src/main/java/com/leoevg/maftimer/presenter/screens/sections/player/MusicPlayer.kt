@@ -24,11 +24,19 @@ fun MusicPlayer(
 
 
 
-// TODO - пофиксить превью в плеере.
 @Preview(showBackground = true)
 @Composable
-private fun PlayerContainerPreview() {
-    MusicPlayer(
+private fun MusicAssemblyPreview() {
+    MusicAssembly(
+        state = MusicPlayerState(
+            isAuthorized = true,
+            singer = "Ivo Bobul",
+            title = "Balalay",
+            isPlaying = true,
+            progressMs = 125000L,
+            durationMs = 180000L
+        ),
+        onEvent = {},
         onSpotifyAuthRequest = {}
     )
 }
