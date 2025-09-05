@@ -9,22 +9,30 @@ import com.leoevg.maftimer.presenter.screens.settings.SettingsScreen
 import com.leoevg.maftimer.presenter.screens.main.MainScreen
 
 @Composable
-fun MainNavHost(modifier: Modifier) {
+fun MainNavHost(
+    onSpotifyAuthRequest: () -> Unit = {},
+){
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = NavigationPaths.TimerSealed
+        startDestination = NavigationPaths.MainScreenSealed
     ){
-        composable<NavigationPaths.TimerSealed> {
+        composable<NavigationPaths.MainScreenSealed> {
             MainScreen(
-                navigate = { path -> navController.navigate(path) }
+                navigate = { path ->
+                    navController.navigate(path)
+                           },
+                onSpotifyAuthRequest = onSpotifyAuthRequest
             )
         }
 
-        composable<NavigationPaths.SettingsSealed> {
-                SettingsScreen()
-            }
+        composable<NavigationPaths.SettingsScreenSealed> {
+            SettingsScreen(
+                onNavigateHome = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
-
+}
