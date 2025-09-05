@@ -87,7 +87,7 @@ class TimerViewModel: ViewModel() {
         }
     }
 
-    fun onTap(){
+    private fun onTap(){
         when{
             _state.value.isFinished -> {
                 onEvent(TimerEvent.OnResetClick)
@@ -98,12 +98,6 @@ class TimerViewModel: ViewModel() {
             else -> onEvent(TimerEvent.OnStartClick)
         }
     }
-
-//    fun onLongPress() {
-//        if (_state.value.isRunning) {
-//            onEvent(TimerEvent.OnPauseClick)
-//        }
-//    }
 }
 
 

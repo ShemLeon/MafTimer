@@ -17,10 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.CustomCircle
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.DialDivider
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.MainTimerButton
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.ProgressBar
 import com.leoevg.maftimer.presenter.util.performStrongVibration
 
 @Composable

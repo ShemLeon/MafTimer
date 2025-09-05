@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,14 +20,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.ui.TypeOfPlayerIndicators
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 import com.leoevg.maftimer.presenter.screens.sections.timer.Timer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
-import com.leoevg.maftimer.presenter.screens.main.MainScreenEvent
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
 fun MainScreen(
@@ -36,6 +38,14 @@ fun MainScreen(
     timerViewModel: TimerViewModel = hiltViewModel()
 ) {
     val timerState by timerViewModel.state.collectAsState()
+    val musicViewModel: MusicPlayerViewModel = hiltViewModel()
+    val musicState by musicViewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        if (musicState.isAuthorized){
+            musicViewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
+        }
+    }
 
     MainScreenContent(
         timerState = timerState,
