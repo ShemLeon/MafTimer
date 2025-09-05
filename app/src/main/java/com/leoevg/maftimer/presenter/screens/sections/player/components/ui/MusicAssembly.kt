@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import TextDurationSong
 import androidx.compose.foundation.background
@@ -19,13 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.ArrowButton
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CheckSpotifyAuthorized
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomSlider
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.PlayPauseButton
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.SongInfo
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.TextProgressSong
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.TypePlayerImage
 
 @Composable
 fun MusicAssembly(

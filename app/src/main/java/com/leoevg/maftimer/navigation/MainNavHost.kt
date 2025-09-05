@@ -9,7 +9,9 @@ import com.leoevg.maftimer.presenter.screens.settings.SettingsScreen
 import com.leoevg.maftimer.presenter.screens.main.MainScreen
 
 @Composable
-fun MainNavHost(){
+fun MainNavHost(
+    onSpotifyAuthRequest: () -> Unit = {},
+){
     val navController = rememberNavController()
 
     NavHost(
@@ -21,7 +23,7 @@ fun MainNavHost(){
                 navigate = { path ->
                     navController.navigate(path)
                            },
-                onSpotifyAuthRequest = { }
+                onSpotifyAuthRequest = onSpotifyAuthRequest
             )
         }
 

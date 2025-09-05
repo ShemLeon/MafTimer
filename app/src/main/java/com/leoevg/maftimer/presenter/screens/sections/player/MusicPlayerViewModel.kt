@@ -1,9 +1,10 @@
 package com.leoevg.maftimer.presenter.screens.sections.player
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoevg.maftimer.data.repository.SpotifyRepository
-import com.leoevg.maftimer.util.SpotifyAuthManager
+import com.leoevg.maftimer.presenter.util.SpotifyAuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ class MusicPlayerViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(MusicPlayerState())
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
+
     // Устанавливаем токен при инициализации
     init {
         authManager.getStoredToken()?.let { token ->
@@ -110,13 +112,14 @@ class MusicPlayerViewModel @Inject constructor(
             }
         }
     }
+
     private fun refreshPlayback() {
         if (!state.value.isAuthorized) return
-
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true) }
                 val playback = spotifyRepository.getCurrentPlayback()
+                Log.d("SpotifyRepository", "Getting current playback...")
                 // Здесь нужно обновить состояние на основе полученных данных
                 // _state.update { it.copy(...) }
                 _state.update { it.copy(isLoading = false) }

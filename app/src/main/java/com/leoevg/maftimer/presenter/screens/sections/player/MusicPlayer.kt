@@ -5,7 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.leoevg.maftimer.presenter.screens.sections.player.components.MusicAssembly
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

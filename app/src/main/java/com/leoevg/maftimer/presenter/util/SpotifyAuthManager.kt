@@ -1,9 +1,10 @@
-package com.leoevg.maftimer.util
+package com.leoevg.maftimer.presenter.util
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.activity.ComponentActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -12,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -109,9 +109,9 @@ class SpotifyAuthManager @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Создаем Basic Auth заголовок вручную
-                val credentials = android.util.Base64.encodeToString(
+                val credentials = Base64.encodeToString(
                     "$CLIENT_ID:$CLIENT_SECRET".toByteArray(),
-                    android.util.Base64.NO_WRAP
+                    Base64.NO_WRAP
                 )
 
                 val formBody = FormBody.Builder()
@@ -142,7 +142,10 @@ class SpotifyAuthManager @Inject constructor(
 
                             // Уведомляем о получении токена
                             CoroutineScope(Dispatchers.Main).launch {
-                                Log.d("SpotifyAuthManager", "Calling onTokenReceived callback")
+                                Log.d(
+                                    "SpotifyAuthManager",
+                                    "Calling onTokenReceived callback: fun isNull =${onTokenReceived==null}"
+                                )
                                 onTokenReceived?.invoke(accessToken)
                             }
                         }
