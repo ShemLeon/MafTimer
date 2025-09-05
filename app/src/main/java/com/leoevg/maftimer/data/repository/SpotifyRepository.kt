@@ -38,7 +38,7 @@ class SpotifyRepository @Inject constructor(
             if (response.isSuccessful) {
                 val playbackState = response.body()
                 _playbackState.value = playbackState
-                Log.d("SpotifyRepository", "Playback state updated: ${playbackState?.is_playing}")
+                Log.d("SpotifyRepository", "Playback state updated: ${playbackState?.isPlaying}")
                 Result.success(playbackState)
             } else {
                 Log.e("SpotifyRepository", "Failed to get playback state: ${response.code()} - ${response.message()}")

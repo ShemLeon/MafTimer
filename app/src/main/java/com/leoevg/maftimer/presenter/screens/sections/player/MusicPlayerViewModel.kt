@@ -1,6 +1,7 @@
 package com.leoevg.maftimer.presenter.screens.sections.player
 
 import android.util.Log
+import android.util.Log.e
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoevg.maftimer.data.repository.SpotifyRepository
@@ -119,10 +120,26 @@ class MusicPlayerViewModel @Inject constructor(
             try {
                 _state.update { it.copy(isLoading = true) }
                 val playback = spotifyRepository.getCurrentPlayback()
+                if (playback.isSuccess) {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isPlaying = playback.getOrNull()?.isPlaying ?: false,
+                            progressMs = playback.getOrNull()?.progressMs ?: 0,
+                            durationMs = playback.getOrNull()?.item?.durationMs ?: 0,
+                            title = playback.getOrNull()?.item?.name ?: "",
+                            artist = playback.getOrNull()?.item?.artists?.get(0)?.name ?: "",
+                            // todo: разобраться с артистами
+                            albumCoverUrl = playback.getOrNull()?.item?.album?.images?.get(0)?.url ?: "",
+                        )
+                    }
+                } else {
+                    throw Exception("Ошибка получения состояния проигрывания")
+                }
+// TODO: сделать парсер из списка артистов в 1 стринг с разделителем через запятую
                 Log.d("SpotifyRepository", "Getting current playback...")
                 // Здесь нужно обновить состояние на основе полученных данных
                 // _state.update { it.copy(...) }
-                _state.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message, isLoading = false) }
             }

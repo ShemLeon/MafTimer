@@ -28,8 +28,8 @@ interface SpotifyApi {
 }
 
 data class SpotifyPlaybackState(
-    val is_playing: Boolean,
-    val progress_ms: Long?,
+    val isPlaying: Boolean,
+    val progressMs: Long?,
     val item: SpotifyTrack?
 )
 
@@ -37,7 +37,7 @@ data class SpotifyTrack(
     val name: String,
     val artists: List<SpotifyArtist>,
     val album: SpotifyAlbum,
-    val duration_ms: Long
+    val durationMs: Long
 )
 
 data class SpotifyArtist(

@@ -17,7 +17,7 @@ fun SongInfo(state: MusicPlayerState) {
     // Текст исполнитель / название песни
     Column(modifier = Modifier.padding(start = 18.dp)) {
         Text(
-            text = state.singer,
+            text = state.artist,
             color = Color.White,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp

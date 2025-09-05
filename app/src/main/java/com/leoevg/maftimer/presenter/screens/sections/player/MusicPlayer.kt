@@ -30,7 +30,7 @@ private fun MusicAssemblyPreview() {
     MusicAssembly(
         state = MusicPlayerState(
             isAuthorized = true,
-            singer = "Ivo Bobul",
+            artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,
             progressMs = 125000L,
