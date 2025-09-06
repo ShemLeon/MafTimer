@@ -1,6 +1,6 @@
 package com.leoevg.maftimer.presenter.screens.sections.timer.components
 
-
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -26,8 +26,8 @@ fun TimerAssembly(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val screenHeightDp = configuration.screenHeightDp.dp
+    val windowInfo = LocalWindowInfo.current
+    val screenHeightDp = windowInfo.containerSize.height.dp
     Box(
         modifier = Modifier
             .fillMaxWidth(0.9f)

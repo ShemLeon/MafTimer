@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,7 +29,9 @@ import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
 import com.leoevg.maftimer.presenter.screens.sections.title.TitleApplication
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
 
 @Composable
 fun MainScreen(
@@ -42,7 +45,7 @@ fun MainScreen(
     val musicState by musicViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        if (musicState.isAuthorized){
+        if (musicState.isAuthorized) {
             musicViewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
@@ -60,15 +63,16 @@ private fun MainScreenContent(
     timerState: TimerState,
     onTimerEvent: (TimerEvent) -> Unit,
     onEvent: (MainScreenEvent) -> Unit,
-    onSpotifyAuthRequest: () -> Unit = {}
+    onSpotifyAuthRequest: () -> Unit = {},
+    musicPlayerState: MusicPlayerState? = null,
+    onMusicPlayerEvent: ((MusicPlayerEvent) -> Unit)? = null
 ) {
     // Извлекаем высоту экрана в Dp
-    val configuration = LocalConfiguration.current
-    val screenHeightDp = configuration.screenHeightDp.dp
+    val windowInfo = LocalWindowInfo.current
+    val screenHeightDp = windowInfo.containerSize.height.dp
     // Определяем цвета для градиента
     val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -77,23 +81,29 @@ private fun MainScreenContent(
                     colors = listOf(topGradientColor, bottomGradientColor)
                 )
             )
-            .padding(5.dp)
     ) {
-        Column() {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             TitleApplication()
-            // Блок с кругом
             Box(
                 modifier = Modifier
+                    .padding(top = 100.dp)
                     .align(Alignment.CenterHorizontally)
-                    .offset(y = -(screenHeightDp * 0.15f))
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
             ) {
-                Timer(
+                TimerAssembly(
                     state = timerState,
                     onEvent = onTimerEvent,
+                    modifier = Modifier
+                        .offset(y = -(screenHeightDp * 0.060f))
                 )
             }
+            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
+            MusicPlayer(
+                onSpotifyAuthRequest = onSpotifyAuthRequest,
+                state = musicPlayerState,
+                onEvent = onMusicPlayerEvent
+            )
         }
         // Блок для плеера
         Column(
@@ -103,13 +113,12 @@ private fun MainScreenContent(
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
-            MusicPlayer(onSpotifyAuthRequest = onSpotifyAuthRequest)
+
+
         }
     }
 }
 
-// TODO: Fix Preview
 @Preview(showBackground = true)
 @Composable
 private fun MainScreenPreview() {
@@ -123,6 +132,15 @@ private fun MainScreenPreview() {
         ),
         onTimerEvent = {},
         onEvent = { _: MainScreenEvent -> },
-        onSpotifyAuthRequest = {}
+        onSpotifyAuthRequest = {},
+        musicPlayerState = MusicPlayerState(
+            isAuthorized = true,
+            artist = "Preview Artist",
+            title = "Preview Song",
+            isPlaying = false,
+            progressMs = 60000L,
+            durationMs = 180000L
+        ),
+        onMusicPlayerEvent = {}
     )
 }
