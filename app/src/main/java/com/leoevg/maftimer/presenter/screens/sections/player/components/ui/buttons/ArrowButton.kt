@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Icon
@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.R
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 
 @Composable
 fun ArrowButton(

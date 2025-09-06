@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -36,7 +36,7 @@ fun RowScope.CustomSlider(
         },
         modifier = Modifier
             .weight(1f)
-            .height(20.dp),
+            .height(15.dp),
         enabled = state.isAuthorized,
         colors = SliderDefaults.colors(
             thumbColor = Color.White,

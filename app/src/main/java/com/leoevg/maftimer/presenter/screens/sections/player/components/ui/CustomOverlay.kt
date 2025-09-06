@@ -5,6 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -25,9 +28,13 @@ fun CustomOverlay(
 ) {
     Box(
         modifier = modifier
+            .fillMaxWidth()
+            .height(160.dp)
+            .padding(horizontal = 25.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(Color(0xFF000000))
             .clickable { onClick() }
-        ,
+            .padding(top = 15.dp, start = 15.dp, end = 15.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(

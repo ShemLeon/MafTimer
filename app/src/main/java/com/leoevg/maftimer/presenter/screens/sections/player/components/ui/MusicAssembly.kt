@@ -1,6 +1,6 @@
 package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
-import TextDurationSong
+
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,13 @@ import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.ArrowButton
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.PlayPauseButton
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.CustomSlider
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.SongInfo
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextProgressSong
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TypePlayerImage
 
 @Composable
 fun MusicAssembly(
@@ -28,70 +35,21 @@ fun MusicAssembly(
     onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 25.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xCC424242))
-                .padding(top = 15.dp, start = 15.dp, end = 15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SongInfo(state) // Информация о песне
-                Spacer(modifier = Modifier.weight(1f))
-                TypePlayerImage(state, onEvent, onSpotifyAuthRequest)
-            }
-            // Слайдер и время
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextProgressSong(state)
-                CustomSlider(state, onEvent)
-                TextDurationSong(state)
-            }
-            // Кнопки управления
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // previous song
-                ArrowButton(state = state, onEvent = onEvent)
-                Spacer(modifier = Modifier.width(20.dp))
-                PlayPauseButton(state, onEvent)
-                Spacer(modifier = Modifier.width(20.dp))
-                // next song
-                ArrowButton(isNext = true, state = state, onEvent = onEvent)
-            }
-        }
-
-        if (!state.isAuthorized) {
-            Log.d("MusicAssembly", "Showing overlay, isAuthorized: ${state.isAuthorized}")
-            CustomOverlay(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 25.dp)
-                    .clip(RoundedCornerShape(20.dp)),
-                onClick = {
-                    Log.d("MusicAssembly", "Overlay clicked -> start auth")
-                    onSpotifyAuthRequest()
-                //    onEvent(MusicPlayerEvent.OnSpotifyAuthRequest)
-                }
-            )
-        } else {
-            Log.d("TAG", "Hiding overlay, isAuthorized: ${state.isAuthorized}")
-        }
+    if (state.isAuthorized) {
+        Log.d("MusicAssembly", "Authorized → show player")
+        PlayerMain(
+            state = state,
+            onEvent = onEvent,
+            onSpotifyAuthRequest = onSpotifyAuthRequest
+        )
+    } else {
+        Log.d("MusicAssembly", "Showing overlay, isAuthorized: ${state.isAuthorized}")
+        CustomOverlay(
+            onClick = { onEvent(MusicPlayerEvent.OnOverlayClicked) }
+        )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

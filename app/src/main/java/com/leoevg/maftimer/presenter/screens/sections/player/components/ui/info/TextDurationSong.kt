@@ -1,3 +1,5 @@
+package com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info
+
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

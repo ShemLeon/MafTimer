@@ -43,3 +43,15 @@ private fun MusicAssemblyPreview() {
         onSpotifyAuthRequest = {}
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun MusicAssemblyOverlayPreview() {
+    MusicAssembly(
+        state = MusicPlayerState(
+            isAuthorized = false,
+        ),
+        onEvent = {},
+        onSpotifyAuthRequest = {}
+    )
+}
