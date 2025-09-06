@@ -9,4 +9,5 @@ sealed interface MusicPlayerEvent {
     data class OnSeekTo(val positionMs: Long): MusicPlayerEvent
     object OnRefreshPlayback: MusicPlayerEvent
     object OnOverlayClicked: MusicPlayerEvent
+    object OnCheckAuthorization: MusicPlayerEvent
 }

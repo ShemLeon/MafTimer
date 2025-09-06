@@ -11,17 +11,20 @@ import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.Music
 @Composable
 fun MusicPlayer(
     onSpotifyAuthRequest: () -> Unit = {},
-    viewModel: MusicPlayerViewModel = hiltViewModel(),
+    state: MusicPlayerState? = null,
+    onEvent: ((MusicPlayerEvent) -> Unit)? = null,
+    viewModel: MusicPlayerViewModel? = if (state == null) hiltViewModel() else null,
 ) {
-    val state by viewModel.state.collectAsState()
+    val actualState = state ?: viewModel?.state?.collectAsState()?.value ?: MusicPlayerState()
+    val actualOnEvent = onEvent ?: viewModel?.let { { event -> it.sendEvent(event) } } ?: {}
+
     LaunchedEffect(Unit) {
-        if (state.isAuthorized) {
+        if (actualState.isAuthorized && viewModel != null) {
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
-    MusicAssembly(state, onEvent = viewModel::sendEvent, onSpotifyAuthRequest)
+    MusicAssembly(actualState, onEvent = actualOnEvent, onSpotifyAuthRequest)
 }
-
 
 
 @Preview(showBackground = true)

@@ -1,11 +1,14 @@
 package com.leoevg.maftimer.presenter.screens.main
 
+import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,14 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
-import com.leoevg.maftimer.presenter.screens.sections.timer.Timer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
@@ -43,10 +44,33 @@ fun MainScreen(
     val timerState by timerViewModel.state.collectAsState()
     val musicViewModel: MusicPlayerViewModel = hiltViewModel()
     val musicState by musicViewModel.state.collectAsState()
+    Log.d("MainScreen", "Music state updated: isAuthorized = ${musicState.isAuthorized}")
+    Log.d("MainScreen", "Music state: $musicState")
 
+    // добавляем логику наблюдения жизненного цикла
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            Log.d("MainScreen", "Lifecycle event: $event")
+            if (event == Lifecycle.Event.ON_RESUME) {
+                Log.d("MainScreen", "App resumed, checking authorization")
+                musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
+            }
+        }
+        // Добавляем наш observer к жизненному циклу
+        //Теперь при каждом изменении состояния будет вызываться наша лямбда
+        lifecycleOwner.lifecycle.addObserver(observer)
+        // Remove observer when composable leaves composition
+        kotlinx.coroutines.DisposableHandle {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+// ДОБАВИТЬ: Принудительная проверка каждые 3 секунды
     LaunchedEffect(Unit) {
-        if (musicState.isAuthorized) {
-            musicViewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
+        while (true) {
+            kotlinx.coroutines.delay(3000)
+            Log.d("MainScreen", "Periodic check: checking authorization")
+            musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
         }
     }
 
@@ -54,7 +78,12 @@ fun MainScreen(
         timerState = timerState,
         onTimerEvent = timerViewModel::onEvent,
         onEvent = viewModel::onEvent,
-        onSpotifyAuthRequest = onSpotifyAuthRequest
+        onSpotifyAuthRequest = onSpotifyAuthRequest,
+        musicPlayerState = musicState,
+        onMusicPlayerEvent = { event ->
+            Log.d("MainScreen", "Music event: $event")
+            musicViewModel.sendEvent(event)
+        }
     )
 }
 
@@ -86,24 +115,8 @@ private fun MainScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TitleApplication()
-            Box(
-                modifier = Modifier
-                    .padding(top = 100.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                TimerAssembly(
-                    state = timerState,
-                    onEvent = onTimerEvent,
-                    modifier = Modifier
-                        .offset(y = -(screenHeightDp * 0.060f))
-                )
-            }
-            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
-            MusicPlayer(
-                onSpotifyAuthRequest = onSpotifyAuthRequest,
-                state = musicPlayerState,
-                onEvent = onMusicPlayerEvent
-            )
+            TimerAssembly(state = timerState, onEvent = onTimerEvent)
+            Spacer(Modifier.weight(1f))
         }
         // Блок для плеера
         Column(
@@ -113,8 +126,12 @@ private fun MainScreenContent(
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
+            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
+            MusicPlayer(
+                onSpotifyAuthRequest = onSpotifyAuthRequest,
+                state = musicPlayerState,
+                onEvent = onMusicPlayerEvent
+            )
         }
     }
 }
@@ -134,7 +151,7 @@ private fun MainScreenPreview() {
         onEvent = { _: MainScreenEvent -> },
         onSpotifyAuthRequest = {},
         musicPlayerState = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorized = false,
             artist = "Preview Artist",
             title = "Preview Song",
             isPlaying = false,

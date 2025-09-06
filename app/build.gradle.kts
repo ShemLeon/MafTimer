@@ -67,6 +67,7 @@ dependencies {
     // Dagger Hilt
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.compose.foundation.layout)
     ksp(libs.dagger.hilt.compiler)
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

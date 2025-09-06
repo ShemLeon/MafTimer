@@ -21,6 +21,7 @@ class SpotifyAuthManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     companion object {
+        private const val TAG = "SpotifyAuthManager"
         private const val CLIENT_ID = "1aff82fd294d4823aaed14ef398a9714"
         private const val CLIENT_SECRET = "d640b8151ef94e668766b0a59d50c39e"
         private const val REDIRECT_URI = "com.leoevg.maftimer://callback"
@@ -43,17 +44,24 @@ class SpotifyAuthManager @Inject constructor(
 
     fun getStoredToken(): String? {
         val token = sharedPreferences.getString(TOKEN_KEY, null)
-        Log.d("SpotifyAuthManager", "Getting stored token: ${if (token != null) "found" else "not found"}")
+        if (token != null) {
+            Log.d("TAG", "✅ Token found: ${token.take(10)}... (length: ${token.length})")
+        } else {
+            Log.d("TAG", "❌ No stored token found")
+        }
         return token
     }
 
     fun saveToken(token: String) {
-        Log.d("SpotifyAuthManager", "Saving token: ${token.take(10)}...")
+        Log.d("TAG", "💾 Saving token: ${token.take(10)}... (length: ${token.length})")
         sharedPreferences.edit().putString(TOKEN_KEY, token).apply()
+        Log.d("TAG", "✅ Token saved successfully")
     }
 
     fun clearToken() {
+        Log.d("TAG", "🗑️ Clearing stored token")
         sharedPreferences.edit().remove(TOKEN_KEY).apply()
+        Log.d("TAG", "✅ Token cleared successfully")
     }
 
     fun startAuth(activity: ComponentActivity) {
@@ -64,7 +72,8 @@ class SpotifyAuthManager @Inject constructor(
                 "&scope=$SCOPES" +
                 "&show_dialog=true"  // Принудительно показать диалог авторизации
 
-        Log.d("SpotifyAuthManager", "Starting auth with URL: $authUrl")
+        Log.d("TAG", "🚀 Starting Spotify authorization")
+        Log.d("TAG", "�� Auth URL: $authUrl")
 
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
@@ -73,34 +82,34 @@ class SpotifyAuthManager @Inject constructor(
 
             activity.startActivity(intent)
         } catch (e: Exception) {
-            Log.e("SpotifyAuthManager", "Failed to start auth", e)
+            Log.e("TAG", "Failed to start auth", e)
         }
     }
 
     fun handleAuthResponse(intent: Intent): String? {
         val uri = intent.data
-        Log.d("SpotifyAuthManager", "Handling auth response: $uri")
+        Log.d("TAG", "Handling auth response: $uri")
 
         if (uri != null && uri.scheme == "com.leoevg.maftimer") {
             val code = uri.getQueryParameter("code")
             val error = uri.getQueryParameter("error")
 
-            Log.d("SpotifyAuthManager", "Code: $code, Error: $error")
+            Log.d("TAG", "Code: $code, Error: $error")
 
             if (error != null) {
-                Log.e("SpotifyAuthManager", "Auth error: $error")
+                Log.e("TAG", "Auth error: $error")
                 return null
             }
 
             if (code != null) {
-                Log.d("SpotifyAuthManager", "Authorization code received, exchanging for token...")
+                Log.d("TAG", "Authorization code received, exchanging for token...")
                 exchangeCodeForToken(code)
                 return code
             } else {
-                Log.e("SpotifyAuthManager", "No code found in response")
+                Log.e("TAG", "No code found in response")
             }
         } else {
-            Log.e("SpotifyAuthManager", "Invalid URI scheme or null URI")
+            Log.e("TAG", "Invalid URI scheme or null URI")
         }
         return null
     }
@@ -126,38 +135,44 @@ class SpotifyAuthManager @Inject constructor(
                     .post(formBody)
                     .build()
 
-                Log.d("SpotifyAuthManager", "Exchanging code for token...")
+                Log.d("TAG", "Exchanging code for token...")
 
                 httpClient.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
-                        Log.d("SpotifyAuthManager", "Token response: $responseBody")
+                        Log.d("TAG", "Token response: $responseBody")
 
                         if (responseBody != null) {
                             val json = JSONObject(responseBody)
                             val accessToken = json.getString("access_token")
 
-                            Log.d("SpotifyAuthManager", "Token exchange successful!")
+                            Log.d("TAG", "Token exchange successful!")
                             saveToken(accessToken)
 
                             // Уведомляем о получении токена
                             CoroutineScope(Dispatchers.Main).launch {
                                 Log.d(
-                                    "SpotifyAuthManager",
+                                    "TAG",
                                     "Calling onTokenReceived callback: fun isNull =${onTokenReceived==null}"
                                 )
                                 onTokenReceived?.invoke(accessToken)
                             }
                         }
                     } else {
-                        Log.e("SpotifyAuthManager", "Token exchange failed: ${response.code} - ${response.message}")
+                        Log.e("TAG", "Token exchange failed: ${response.code} - ${response.message}")
                         val errorBody = response.body?.string()
-                        Log.e("SpotifyAuthManager", "Error body: $errorBody")
+                        Log.e("TAG", "Error body: $errorBody")
                     }
                 }
             } catch (e: Exception) {
-                Log.e("SpotifyAuthManager", "Exception during token exchange", e)
+                Log.e("TAG", "Exception during token exchange", e)
             }
         }
+    }
+
+    fun clearTokenForTesting() {
+        Log.d("SpotifyAuthManager", "�� Clearing token for testing")
+        sharedPreferences.edit().remove(TOKEN_KEY).apply()
+        Log.d("SpotifyAuthManager", "✅ Token cleared for testing")
     }
 }

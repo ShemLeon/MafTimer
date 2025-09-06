@@ -1,5 +1,6 @@
 package com.leoevg.maftimer
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,10 +27,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         Log.d("MainActivity", "onCreate called")
 
-        // Устанавливаем callback для получения токена
+          // Устанавливаем callback для получения токена
         spotifyAuthManager.onTokenReceived = { token ->
             Log.d("MainActivity", "Token received in callback: ${token.take(10)}...")
             spotifyRepository.setAccessToken(token)
@@ -60,6 +60,21 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         Log.d("MainActivity", "onNewIntent called with: ${intent.data}")
         handleIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("MainActivity", "onResume called")
+        // Принудительно проверить авторизацию при возврате
+        // Это временное решение для тестирования
+        val prefs = getSharedPreferences("spotify_auth", Context.MODE_PRIVATE)
+        val token = prefs.getString("access_token", null)
+        Log.d("MainActivity", "onResume: token = ${if (token != null) "found" else "null"}")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("MainActivity", "onPause called")
     }
 
     private fun handleIntent(intent: Intent) {

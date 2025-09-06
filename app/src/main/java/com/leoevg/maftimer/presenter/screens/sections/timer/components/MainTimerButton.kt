@@ -31,7 +31,7 @@ fun MainTimerButton(
             .offset(
                 x =
                     if (state.isRunning || state.isPaused) 0.dp
-                    else (screenHeightDp * 0.015f)
+                    else (screenHeightDp * 0.008f)
             )
     )
 }
