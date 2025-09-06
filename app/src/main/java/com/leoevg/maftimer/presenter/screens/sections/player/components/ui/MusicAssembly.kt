@@ -2,7 +2,7 @@ package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 
 import android.util.Log
-import androidx.compose.foundation.background
+import com.leoevg.maftimer.presenter.util.Logx
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +28,7 @@ import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.SongInfo
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextProgressSong
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TypePlayerImage
-
+private const val TAG = "MusicAssembly"
 @Composable
 fun MusicAssembly(
     state: MusicPlayerState,
@@ -36,14 +36,14 @@ fun MusicAssembly(
     onSpotifyAuthRequest: () -> Unit
 ) {
     if (state.isAuthorized) {
-        Log.d("MusicAssembly", "Authorized → show player")
+        Logx.success(TAG, "Authorized → show player")
         PlayerMain(
             state = state,
             onEvent = onEvent,
             onSpotifyAuthRequest = onSpotifyAuthRequest
         )
     } else {
-        Log.d("MusicAssembly", "Showing overlay, isAuthorized: ${state.isAuthorized}")
+        Logx.info(TAG, "Showing overlay, isAuthorized=${state.isAuthorized}")
         CustomOverlay(
             onClick = { onEvent(MusicPlayerEvent.OnOverlayClicked) }
         )

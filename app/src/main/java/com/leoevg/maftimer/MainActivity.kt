@@ -1,5 +1,7 @@
 package com.leoevg.maftimer
 
+
+import com.leoevg.maftimer.presenter.util.Logx
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -24,20 +26,22 @@ class MainActivity : ComponentActivity() {
     lateinit var spotifyAuthManager: SpotifyAuthManager
     @Inject
     lateinit var spotifyRepository: SpotifyRepository
-
+    companion object {
+        private const val TAG = "MainActivity"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MainActivity", "onCreate called")
+        Logx.info(TAG, "onCreate")
 
           // Устанавливаем callback для получения токена
         spotifyAuthManager.onTokenReceived = { token ->
-            Log.d("MainActivity", "Token received in callback: ${token.take(10)}...")
+            Logx.success(TAG, "Token received: ${token.take(10)}...")
             spotifyRepository.setAccessToken(token)
         }
 
         // Проверяем intent при запуске
         intent?.let {
-            Log.d("MainActivity", "Launch intent: ${it.data}")
+            Logx.info(TAG, "Launch intent: ${it.data}")
             handleIntent(it)
         }
 
@@ -58,28 +62,28 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.d("MainActivity", "onNewIntent called with: ${intent.data}")
+        Logx.info(TAG, "onNewIntent: ${intent.data}")
         handleIntent(intent)
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d("MainActivity", "onResume called")
+        Logx.info(TAG, "onResume")
         // Принудительно проверить авторизацию при возврате
         // Это временное решение для тестирования
         val prefs = getSharedPreferences("spotify_auth", Context.MODE_PRIVATE)
         val token = prefs.getString("access_token", null)
-        Log.d("MainActivity", "onResume: token = ${if (token != null) "found" else "null"}")
+        if (token != null) Logx.success(TAG, "Token present in prefs") else Logx.error(TAG, "No token in prefs")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("MainActivity", "onPause called")
+        Logx.info(TAG, "onPause")
     }
 
     private fun handleIntent(intent: Intent) {
         if (intent.data?.scheme == "com.leoevg.maftimer") {
-            Log.d("MainActivity", "Handling Spotify callback")
+            Logx.action(TAG, "Handling Spotify callback")
             spotifyAuthManager.handleAuthResponse(intent)
         }
     }

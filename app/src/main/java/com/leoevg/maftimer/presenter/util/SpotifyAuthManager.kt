@@ -1,5 +1,6 @@
 package com.leoevg.maftimer.presenter.util
 
+
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,6 +16,8 @@ import okhttp3.*
 import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.leoevg.maftimer.presenter.util.Logx
+
 
 @Singleton
 class SpotifyAuthManager @Inject constructor(
@@ -45,23 +48,23 @@ class SpotifyAuthManager @Inject constructor(
     fun getStoredToken(): String? {
         val token = sharedPreferences.getString(TOKEN_KEY, null)
         if (token != null) {
-            Log.d("TAG", "✅ Token found: ${token.take(10)}... (length: ${token.length})")
+            Logx.success(TAG, "Token found: ${token.take(10)}... (length: ${token.length})")
         } else {
-            Log.d("TAG", "❌ No stored token found")
+            Logx.error(TAG, "No stored token found")
         }
         return token
     }
 
     fun saveToken(token: String) {
-        Log.d("TAG", "💾 Saving token: ${token.take(10)}... (length: ${token.length})")
+        Logx.storage(TAG, "Saving token: ${token.take(10)}... (length: ${token.length})")
         sharedPreferences.edit().putString(TOKEN_KEY, token).apply()
-        Log.d("TAG", "✅ Token saved successfully")
+        Logx.success(TAG, "Token saved successfully")
     }
 
     fun clearToken() {
-        Log.d("TAG", "🗑️ Clearing stored token")
+        Logx.storage(TAG, "Clearing stored token")
         sharedPreferences.edit().remove(TOKEN_KEY).apply()
-        Log.d("TAG", "✅ Token cleared successfully")
+        Logx.success(TAG, "Token cleared successfully")
     }
 
     fun startAuth(activity: ComponentActivity) {
@@ -72,8 +75,8 @@ class SpotifyAuthManager @Inject constructor(
                 "&scope=$SCOPES" +
                 "&show_dialog=true"  // Принудительно показать диалог авторизации
 
-        Log.d("TAG", "🚀 Starting Spotify authorization")
-        Log.d("TAG", "�� Auth URL: $authUrl")
+        Logx.action(TAG, "Starting Spotify authorization")
+        Logx.info(TAG, "🔗 Auth URL: $authUrl")
 
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
@@ -82,34 +85,34 @@ class SpotifyAuthManager @Inject constructor(
 
             activity.startActivity(intent)
         } catch (e: Exception) {
-            Log.e("TAG", "Failed to start auth", e)
+            Logx.error(TAG, "Failed to start auth", e)
         }
     }
 
     fun handleAuthResponse(intent: Intent): String? {
         val uri = intent.data
-        Log.d("TAG", "Handling auth response: $uri")
+        Logx.info(TAG, "Handling auth response: $uri")
 
         if (uri != null && uri.scheme == "com.leoevg.maftimer") {
             val code = uri.getQueryParameter("code")
             val error = uri.getQueryParameter("error")
 
-            Log.d("TAG", "Code: $code, Error: $error")
+            Logx.info(TAG, "Auth response → code=$code, error=$error")
 
             if (error != null) {
-                Log.e("TAG", "Auth error: $error")
+                Logx.error(TAG, "Auth error: $error")
                 return null
             }
 
             if (code != null) {
-                Log.d("TAG", "Authorization code received, exchanging for token...")
+                Logx.action(TAG, "Authorization code received → exchanging for token…")
                 exchangeCodeForToken(code)
                 return code
             } else {
-                Log.e("TAG", "No code found in response")
+                Logx.error(TAG, "No code found in response")
             }
         } else {
-            Log.e("TAG", "Invalid URI scheme or null URI")
+            Logx.error(TAG, "Invalid URI scheme or null URI")
         }
         return null
     }
@@ -135,44 +138,44 @@ class SpotifyAuthManager @Inject constructor(
                     .post(formBody)
                     .build()
 
-                Log.d("TAG", "Exchanging code for token...")
+                Logx.network(TAG, "Exchanging code for token…")
 
                 httpClient.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
-                        Log.d("TAG", "Token response: $responseBody")
+                        Logx.network(TAG, "Token response: $responseBody")
 
                         if (responseBody != null) {
                             val json = JSONObject(responseBody)
                             val accessToken = json.getString("access_token")
 
-                            Log.d("TAG", "Token exchange successful!")
+                            Logx.success(TAG, "Token exchange successful")
                             saveToken(accessToken)
 
                             // Уведомляем о получении токена
                             CoroutineScope(Dispatchers.Main).launch {
-                                Log.d(
-                                    "TAG",
-                                    "Calling onTokenReceived callback: fun isNull =${onTokenReceived==null}"
+                                Logx.debug(
+                                    TAG,
+                                    "Calling onTokenReceived callback: fun isNull=${onTokenReceived == null}"
                                 )
                                 onTokenReceived?.invoke(accessToken)
                             }
                         }
                     } else {
-                        Log.e("TAG", "Token exchange failed: ${response.code} - ${response.message}")
+                        Logx.error(TAG, "Token exchange failed: ${response.code} - ${response.message}")
                         val errorBody = response.body?.string()
-                        Log.e("TAG", "Error body: $errorBody")
+                        Logx.error(TAG, "Error body: $errorBody")
                     }
                 }
             } catch (e: Exception) {
-                Log.e("TAG", "Exception during token exchange", e)
+                Logx.error(TAG, "Exception during token exchange", e)
             }
         }
     }
 
     fun clearTokenForTesting() {
-        Log.d("SpotifyAuthManager", "�� Clearing token for testing")
+        Logx.storage(TAG, "🧪 Clearing token for testing")
         sharedPreferences.edit().remove(TOKEN_KEY).apply()
-        Log.d("SpotifyAuthManager", "✅ Token cleared for testing")
+        Logx.success(TAG, "Token cleared for testing")
     }
 }

@@ -1,5 +1,5 @@
 package com.leoevg.maftimer.data.repository
-
+import com.leoevg.maftimer.presenter.util.Logx
 import android.util.Log
 import com.leoevg.maftimer.data.api.SpotifyApi
 import com.leoevg.maftimer.data.api.SpotifyPlaybackState
@@ -15,12 +15,12 @@ class SpotifyRepository @Inject constructor(
 ) {
     private val _playbackState = MutableStateFlow<SpotifyPlaybackState?>(null)
     val playbackState: StateFlow<SpotifyPlaybackState?> = _playbackState.asStateFlow()
-
+    companion object {private const val TAG = "SpotifyRepository"}
     private var accessToken: String? = null
 
     fun setAccessToken(token: String) {
         accessToken = token
-        Log.d("SpotifyRepository", "Token set: ${token.take(10)}...")
+        Logx.storage(TAG, "Token set: ${token.take(10)}...")
     }
 
     private fun getAuthHeader(): String = "Bearer $accessToken"
@@ -28,24 +28,24 @@ class SpotifyRepository @Inject constructor(
     suspend fun getCurrentPlayback(): Result<SpotifyPlaybackState?> {
         return try {
             if (accessToken == null) {
-                Log.e("SpotifyRepository", "No access token available")
+                Logx.error(TAG, "No access token available")
                 return Result.failure(Exception("No access token"))
             }
 
-            Log.d("SpotifyRepository", "Getting current playback...")
+            Logx.network(TAG, "Getting current playback…")
             val response = spotifyApi.getCurrentPlayback(getAuthHeader())
 
             if (response.isSuccessful) {
                 val playbackState = response.body()
                 _playbackState.value = playbackState
-                Log.d("SpotifyRepository", "Playback state updated: ${playbackState?.isPlaying}")
+                Logx.info(TAG, "Playback state updated: ${playbackState?.isPlaying}")
                 Result.success(playbackState)
             } else {
-                Log.e("SpotifyRepository", "Failed to get playback state: ${response.code()} - ${response.message()}")
+                Logx.error(TAG, "Failed to get playback state: ${response.code()} - ${response.message()}")
                 Result.failure(Exception("Failed to get playback state: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception getting playback state", e)
+            Logx.error(TAG, "Exception getting playback state", e)
             Result.failure(e)
         }
     }
@@ -56,16 +56,16 @@ class SpotifyRepository @Inject constructor(
                 return Result.failure(Exception("No access token"))
             }
 
-            Log.d("SpotifyRepository", "Playing...")
+            Logx.network(TAG, "Playing…")
             val response = spotifyApi.resumePlayback(getAuthHeader())
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Log.e("SpotifyRepository", "Failed to play: ${response.code()}")
+                Logx.error(TAG, "Failed to play: ${response.code()}")
                 Result.failure(Exception("Failed to play: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception playing", e)
+            Logx.error(TAG, "Exception playing", e)
             Result.failure(e)
         }
     }
@@ -76,16 +76,16 @@ class SpotifyRepository @Inject constructor(
                 return Result.failure(Exception("No access token"))
             }
 
-            Log.d("SpotifyRepository", "Pausing...")
+            Logx.network(TAG, "Pausing…")
             val response = spotifyApi.pausePlayback(getAuthHeader())
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Log.e("SpotifyRepository", "Failed to pause: ${response.code()}")
+                Logx.error(TAG, "Failed to pause: ${response.code()}")
                 Result.failure(Exception("Failed to pause: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception pausing", e)
+            Logx.error(TAG, "Exception pausing", e)
             Result.failure(e)
         }
     }
@@ -96,16 +96,16 @@ class SpotifyRepository @Inject constructor(
                 return Result.failure(Exception("No access token"))
             }
 
-            Log.d("SpotifyRepository", "Skipping to next...")
+            Logx.network(TAG, "Skipping to next…")
             val response = spotifyApi.skipToNext(getAuthHeader())
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Log.e("SpotifyRepository", "Failed to skip next: ${response.code()}")
+                Logx.error(TAG, "Failed to skip next: ${response.code()}")
                 Result.failure(Exception("Failed to skip next: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception skipping next", e)
+            Logx.network(TAG, "Skipping to previous…")
             Result.failure(e)
         }
     }
@@ -120,11 +120,11 @@ class SpotifyRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Log.e("SpotifyRepository", "Failed to skip previous: ${response.code()}")
+                Logx.error(TAG, "Failed to skip previous: ${response.code()}")
                 Result.failure(Exception("Failed to skip previous: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception skipping previous", e)
+            Logx.error(TAG, "Exception skipping previous", e)
             Result.failure(e)
         }
     }
@@ -135,16 +135,16 @@ class SpotifyRepository @Inject constructor(
                 return Result.failure(Exception("No access token"))
             }
 
-            Log.d("SpotifyRepository", "Seeking to $positionMs...")
+            Logx.network(TAG, "Seeking to $positionMs…")
             val response = spotifyApi.seekToPosition(getAuthHeader(), positionMs)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Log.e("SpotifyRepository", "Failed to seek: ${response.code()}")
+                Logx.error(TAG, "Failed to seek: ${response.code()}")
                 Result.failure(Exception("Failed to seek: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Log.e("SpotifyRepository", "Exception seeking", e)
+            Logx.error(TAG, "Exception seeking", e)
             Result.failure(e)
         }
     }

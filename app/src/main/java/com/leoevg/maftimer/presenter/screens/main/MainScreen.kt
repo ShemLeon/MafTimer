@@ -1,5 +1,7 @@
 package com.leoevg.maftimer.presenter.screens.main
 
+
+import com.leoevg.maftimer.presenter.util.Logx
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -34,6 +36,8 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
 
+
+private const val TAG = "MainScreen"
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
@@ -44,16 +48,16 @@ fun MainScreen(
     val timerState by timerViewModel.state.collectAsState()
     val musicViewModel: MusicPlayerViewModel = hiltViewModel()
     val musicState by musicViewModel.state.collectAsState()
-    Log.d("MainScreen", "Music state updated: isAuthorized = ${musicState.isAuthorized}")
-    Log.d("MainScreen", "Music state: $musicState")
+    Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorized}")
+    Logx.debug(TAG, "Music state: $musicState")
 
     // добавляем логику наблюдения жизненного цикла
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            Log.d("MainScreen", "Lifecycle event: $event")
+            Logx.info(TAG, "Lifecycle event: $event")
             if (event == Lifecycle.Event.ON_RESUME) {
-                Log.d("MainScreen", "App resumed, checking authorization")
+                Logx.action(TAG, "App resumed → checking authorization")
                 musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
             }
         }
@@ -69,7 +73,7 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         while (true) {
             kotlinx.coroutines.delay(3000)
-            Log.d("MainScreen", "Periodic check: checking authorization")
+            Logx.debug(TAG, "Periodic check → checking authorization")
             musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
         }
     }
@@ -81,7 +85,7 @@ fun MainScreen(
         onSpotifyAuthRequest = onSpotifyAuthRequest,
         musicPlayerState = musicState,
         onMusicPlayerEvent = { event ->
-            Log.d("MainScreen", "Music event: $event")
+            Logx.debug(TAG, "Music event: $event")
             musicViewModel.sendEvent(event)
         }
     )

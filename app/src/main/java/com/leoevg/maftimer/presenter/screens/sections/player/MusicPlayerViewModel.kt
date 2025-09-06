@@ -3,7 +3,7 @@ package com.leoevg.maftimer.presenter.screens.sections.player
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.util.Log.e
+import com.leoevg.maftimer.presenter.util.Logx
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leoevg.maftimer.data.repository.SpotifyRepository
@@ -23,6 +23,7 @@ class MusicPlayerViewModel @Inject constructor(
     private val authManager: SpotifyAuthManager,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
+    companion object {        private const val TAG = "MusicPlayerViewModel"    }
     private val _state = MutableStateFlow(MusicPlayerState())
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
 
@@ -32,7 +33,6 @@ class MusicPlayerViewModel @Inject constructor(
             spotifyRepository.setAccessToken(token)
         }
     }
-
     fun sendEvent(event: MusicPlayerEvent) {
         when (event) {
             is MusicPlayerEvent.OnSpotifyAuthRequest -> checkAuthorization()
@@ -43,11 +43,11 @@ class MusicPlayerViewModel @Inject constructor(
             is MusicPlayerEvent.OnSeekTo -> seekTo(event.positionMs)
             is MusicPlayerEvent.OnRefreshPlayback -> refreshPlayback()
             is MusicPlayerEvent.OnOverlayClicked -> {
-                Log.d("MusicPlayerViewModel", "OnOverlayClicked event received")
+                Logx.debug(TAG, "OnOverlayClicked event received")
                 openSpotifyApp()
             }
             is MusicPlayerEvent.OnCheckAuthorization -> {
-                Log.d("MusicPlayerViewModel", "OnCheckAuthorization event received")
+                Logx.debug(TAG, "OnCheckAuthorization event received")
                 checkAuthorizationAndRefresh()
             }
         }
@@ -164,7 +164,7 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun openSpotifyApp() {
-        Log.d("MusicPlayerViewModel", "openSpotifyApp called")
+        Logx.action(TAG, "openSpotifyApp")
         val launchIntent = appContext.packageManager.getLaunchIntentForPackage("com.spotify.music")
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -173,14 +173,14 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun checkAuthorizationAndRefresh() {
-        Log.d("MusicPlayerViewModel", "checkAuthorizationAndRefresh called")
+        Logx.action(TAG, "checkAuthorizationAndRefresh")
         viewModelScope.launch {
             val token = authManager.getStoredToken()
             val isAuthorized = token != null
-            Log.d("MusicPlayerViewModel", "Authorization check: token = ${if (token != null) "found" else "null"}, isAuthorized = $isAuthorized")
+            Logx.info(TAG, "Authorization check: token=${if (token != null) "found" else "null"}, isAuthorized=$isAuthorized")
             _state.update { it.copy(isAuthorized = isAuthorized) }
             if (isAuthorized) {
-                Log.d("MusicPlayerViewModel", "Token found, refreshing playback")
+                Logx.success(TAG, "Token found → refreshing playback")
                 refreshPlayback()
             }
         }
