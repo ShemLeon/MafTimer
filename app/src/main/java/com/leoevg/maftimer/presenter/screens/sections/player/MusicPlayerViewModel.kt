@@ -133,29 +133,51 @@ class MusicPlayerViewModel @Inject constructor(
                 _state.update { it.copy(isLoading = true) }
                 val playback = spotifyRepository.getCurrentPlayback()
                 if (playback.isSuccess) {
+                    val data = playback.getOrNull()
+                    if (data == null) {
+                        Logx.info(TAG, "Playback is null (likely 204) → show overlay")
+                        _state.update {
+                            it.copy(
+                                isAuthorized = false,
+                                isLoading = false,
+                                isPlaying = false,
+                                progressMs = 0,
+                                durationMs = 0,
+                                title = "",
+                                artist = "",
+                                albumCoverUrl = ""
+                            )
+                        }
+                        return@launch
+                    }
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            isPlaying = playback.getOrNull()?.isPlaying ?: false,
-                            progressMs = playback.getOrNull()?.progressMs ?: 0,
-                            durationMs = playback.getOrNull()?.item?.durationMs ?: 0,
-                            title = playback.getOrNull()?.item?.name ?: "",
-                            artist = playback.getOrNull()?.item?.artists?.get(0)?.name ?: "",
-                            // todo: разобраться с артистами
-                            albumCoverUrl = playback.getOrNull()?.item?.album?.images?.get(0)?.url
-                                ?: "",
+                            isPlaying = data.isPlaying ?: false,
+                            progressMs = data.progressMs ?: 0,
+                            durationMs = data.item?.durationMs ?: 0,
+                            title = data.item?.name ?: "",
+                            artist = data.item?.artists?.getOrNull(0)?.name ?: "",
+                            albumCoverUrl = data.item?.album?.images?.getOrNull(0)?.url ?: ""
                         )
                     }
                 } else {
-                    throw Exception("Ошибка получения состояния проигрывания")
+                    val msg = playback.exceptionOrNull()?.message.orEmpty()
+                    if (msg.contains("401")) {
+                        authManager.clearToken()
+                        _state.update { it.copy(isAuthorized = false, isLoading = false, error = null) }
+                    } else {
+                        _state.update { it.copy(error = "Ошибка получения состояния проигрывания", isLoading = false) }
+                    }
                 }
-
-// TODO: сделать парсер из списка артистов в 1 стринг с разделителем через запятую
-                Log.d("SpotifyRepository", "Getting current playback...")
-                // Здесь нужно обновить состояние на основе полученных данных
-                // _state.update { it.copy(...) }
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message, isLoading = false) }
+                val msg = e.message.orEmpty()
+                if (msg.contains("401")) {
+                    authManager.clearToken()
+                    _state.update { it.copy(isAuthorized = false, isLoading = false, error = null) }
+                } else {
+                    _state.update { it.copy(error = e.message, isLoading = false) }
+                }
             }
         }
     }
