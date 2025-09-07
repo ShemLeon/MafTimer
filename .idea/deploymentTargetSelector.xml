@@ -10,7 +10,7 @@
       </SelectionState>
       <SelectionState runConfigName="MafTimer">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-09-06T11:25:47.370068700Z">
+        <DropdownSelection timestamp="2025-09-06T23:09:55.612230300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\eliey\.android\avd\Medium_Phone_2.avd" />

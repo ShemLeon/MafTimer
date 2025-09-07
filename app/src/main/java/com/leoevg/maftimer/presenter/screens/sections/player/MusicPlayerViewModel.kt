@@ -149,6 +149,7 @@ class MusicPlayerViewModel @Inject constructor(
                 } else {
                     throw Exception("Ошибка получения состояния проигрывания")
                 }
+
 // TODO: сделать парсер из списка артистов в 1 стринг с разделителем через запятую
                 Log.d("SpotifyRepository", "Getting current playback...")
                 // Здесь нужно обновить состояние на основе полученных данных
