@@ -159,6 +159,19 @@ class SpotifyAuthManager @Inject constructor(
                                     "Calling onTokenReceived callback: fun isNull=${onTokenReceived == null}"
                                 )
                                 onTokenReceived?.invoke(accessToken)
+                                try {
+                                    val launchIntent = context.packageManager.getLaunchIntentForPackage("com.spotify.music")
+                                    if (launchIntent != null) {
+                                        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        Logx.action(TAG, "Opening Spotify app after successful auth")
+                                        context.startActivity(launchIntent)
+                                    } else {
+                                        Logx.error(TAG, "Spotify app not found on device")
+                                    }
+                                } catch (e: Exception) {
+                                    Logx.error(TAG, "Failed to open Spotify app", e)
+                                }
+
                             }
                         }
                     } else {
