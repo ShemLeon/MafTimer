@@ -1,7 +1,6 @@
 package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 
-
 import androidx.compose.foundation.layout.height
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextDurationSong
 import android.util.Log
@@ -54,12 +53,20 @@ fun PlayerMain(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
             ) {
-                SongInfo(state)
-                Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SongInfo(state)
+                }
                 TypePlayerImage(state, onEvent, onSpotifyAuthRequest)
             }
             Row(
@@ -73,7 +80,7 @@ fun PlayerMain(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp),
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -96,6 +103,24 @@ private fun PlayerMainPreview() {
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,
+            progressMs = 125000L,
+            durationMs = 180000L
+        ),
+        onEvent = {},
+        onSpotifyAuthRequest = {}
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun PlayerMainLongPreview() {
+    PlayerMain(
+        state = MusicPlayerState(
+            isAuthorized = true,
+            artist = "ой у вишневому саду там соловейко",
+            title = "Balalay",
+            isPlaying = false,
             progressMs = 125000L,
             durationMs = 180000L
         ),

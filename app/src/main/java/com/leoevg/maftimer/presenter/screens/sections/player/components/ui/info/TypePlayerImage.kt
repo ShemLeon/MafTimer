@@ -40,7 +40,8 @@ fun TypePlayerImage(
         modifier = Modifier
             .size(56.dp)
             .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+        ,
         contentScale = ContentScale.Crop
     )
 
