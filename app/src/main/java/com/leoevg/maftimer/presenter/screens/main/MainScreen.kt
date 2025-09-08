@@ -165,3 +165,29 @@ private fun MainScreenPreview() {
         onMusicPlayerEvent = {}
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenWithoutOverlayPreview() {
+    MainScreenContent(
+        timerState = TimerState(
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false,
+            remainingSeconds = 42
+        ),
+        onTimerEvent = {},
+        onEvent = { _: MainScreenEvent -> },
+        onSpotifyAuthRequest = {},
+        musicPlayerState = MusicPlayerState(
+            isAuthorized = true,
+            artist = "Preview Artist",
+            title = "Preview Song",
+            isPlaying = false,
+            progressMs = 60000L,
+            durationMs = 180000L
+        ),
+        onMusicPlayerEvent = {}
+    )
+}

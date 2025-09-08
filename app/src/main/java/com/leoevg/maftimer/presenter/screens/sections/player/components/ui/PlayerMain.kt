@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.Surface
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.ArrowButton
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.PlayPauseButton
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.CustomSlider
@@ -37,14 +38,18 @@ fun PlayerMain(
     onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
-    Box {
+    Surface(
+        color = Color(0xCC424242),  // ваш оригинальный цвет
+        tonalElevation = 2.dp,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(horizontal = 25.dp)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
-                .padding(horizontal = 25.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(Color(0xCC424242))
                 .padding(top = 15.dp, start = 15.dp, end = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
