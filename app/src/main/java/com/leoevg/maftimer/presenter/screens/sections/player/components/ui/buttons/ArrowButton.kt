@@ -42,7 +42,7 @@ fun ArrowButtonContent(
     onPreviousClick: () -> Unit = {}
 ) {
     Icon(
-        painter = painterResource(R.drawable.btn_strelki),
+        painter = painterResource(R.drawable.outline_skip_next_24),
         contentDescription = if (isNext) "Next song" else "Previous song",
         modifier = Modifier
             .rotate(

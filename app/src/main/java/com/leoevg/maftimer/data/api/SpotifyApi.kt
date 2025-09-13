@@ -27,11 +27,7 @@ interface SpotifyApi {
     ): Response<Unit>
 }
 
-data class SpotifyPlaybackState(
-    val isPlaying: Boolean,
-    val progressMs: Long?,
-    val item: SpotifyTrack?
-)
+
 
 data class SpotifyTrack(
     val name: String,

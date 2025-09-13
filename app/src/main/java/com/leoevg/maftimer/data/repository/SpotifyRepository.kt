@@ -1,8 +1,10 @@
 package com.leoevg.maftimer.data.repository
+
 import com.leoevg.maftimer.presenter.util.Logx
 import android.util.Log
 import com.leoevg.maftimer.data.api.SpotifyApi
 import com.leoevg.maftimer.data.api.SpotifyPlaybackState
+import com.leoevg.maftimer.domain.repository.ISpotifyRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,20 +14,20 @@ import javax.inject.Singleton
 @Singleton
 class SpotifyRepository @Inject constructor(
     private val spotifyApi: SpotifyApi
-) {
+): ISpotifyRepository {
     private val _playbackState = MutableStateFlow<SpotifyPlaybackState?>(null)
     val playbackState: StateFlow<SpotifyPlaybackState?> = _playbackState.asStateFlow()
     companion object {private const val TAG = "SpotifyRepository"}
     private var accessToken: String? = null
 
-    fun setAccessToken(token: String) {
+    override fun setAccessToken(token: String) {
         accessToken = token
         Logx.storage(TAG, "Token set: ${token.take(10)}...")
     }
 
     private fun getAuthHeader(): String = "Bearer $accessToken"
 
-    suspend fun getCurrentPlayback(): Result<SpotifyPlaybackState?> {
+    override suspend fun getCurrentPlayback(): Result<SpotifyPlaybackState?> {
         return try {
             if (accessToken == null) {
                 Logx.error(TAG, "No access token available")
@@ -50,7 +52,7 @@ class SpotifyRepository @Inject constructor(
         }
     }
 
-    suspend fun play(): Result<Unit> {
+    override suspend fun play(): Result<Unit> {
         return try {
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
@@ -70,7 +72,7 @@ class SpotifyRepository @Inject constructor(
         }
     }
 
-    suspend fun pause(): Result<Unit> {
+    override suspend fun pause(): Result<Unit> {
         return try {
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
@@ -90,7 +92,7 @@ class SpotifyRepository @Inject constructor(
         }
     }
 
-    suspend fun next(): Result<Unit> {
+    override suspend fun next(): Result<Unit> {
         return try {
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
@@ -110,7 +112,7 @@ class SpotifyRepository @Inject constructor(
         }
     }
 
-    suspend fun previous(): Result<Unit> {
+    override suspend fun previous(): Result<Unit> {
         return try {
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
@@ -129,7 +131,7 @@ class SpotifyRepository @Inject constructor(
         }
     }
 
-    suspend fun seekTo(positionMs: Long): Result<Unit> {
+    override suspend fun seekTo(positionMs: Long): Result<Unit> {
         return try {
             if (accessToken == null) {
                 return Result.failure(Exception("No access token"))
