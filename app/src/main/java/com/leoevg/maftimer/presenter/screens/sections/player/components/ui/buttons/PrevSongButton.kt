@@ -17,43 +17,34 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 
 @Composable
-fun ArrowButton(
+fun PrevSongButton(
     state: MusicPlayerState,
     onEvent: (MusicPlayerEvent) -> Unit,
-    isNext: Boolean = false
+    isPrev: Boolean = false
 ) {
-    ArrowButtonContent(
-        isNext = isNext,
+    PrevSongButtonContent(
+        isPrev = isPrev,
         isAuthorized = state.isAuthorized,
-        onNextClick = {
-            onEvent(MusicPlayerEvent.OnNextSongBtnClicked)
-        },
-        onPreviousClick = {
+        onPrevClick = {
             onEvent(MusicPlayerEvent.OnPreviousSongBtnClicked)
         }
     )
 }
 
 @Composable
-fun ArrowButtonContent(
-    isNext: Boolean = false,
+fun PrevSongButtonContent(
+    isPrev: Boolean = false,
     isAuthorized: Boolean = true,
-    onNextClick: () -> Unit = {},
-    onPreviousClick: () -> Unit = {}
+    onPrevClick: () -> Unit = {}
 ) {
     Icon(
-        painter = painterResource(R.drawable.outline_skip_next_24),
-        contentDescription = if (isNext) "Next song" else "Previous song",
+        painter = painterResource(R.drawable.outline_skip_previous_24),
+        contentDescription =   "Previous song",
         modifier = Modifier
-            .rotate(
-                if (isNext) 0f
-                else 180f
-            )
             .size(40.dp)
             .clickable {
                 if (isAuthorized) {
-                    if (isNext) onNextClick()
-                    else onPreviousClick()
+                   onPrevClick()
                 }
             },
         tint = Color(0x80fc520d)
@@ -63,13 +54,13 @@ fun ArrowButtonContent(
 
 @Preview(showBackground = true, name = "Previous Button")
 @Composable
-private fun ArrowButtonContentPreview() {
+private fun PrevSongButtonContentPreview() {
     Surface(
         color = Color.Black,
         modifier = Modifier.padding(16.dp)
     ) {
-        ArrowButtonContent(
-            isNext = false,
+        PrevSongButtonContent(
+            isPrev = false,
             isAuthorized = true
         )
     }

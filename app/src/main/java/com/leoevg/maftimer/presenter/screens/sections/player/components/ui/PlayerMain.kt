@@ -3,8 +3,6 @@ package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
 import androidx.compose.foundation.layout.height
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextDurationSong
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,16 +14,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Surface
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.ArrowButton
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.NextSongButton
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.PlayPauseButton
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.buttons.PrevSongButton
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.CustomSlider
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.SongInfo
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextProgressSong
@@ -84,11 +81,11 @@ fun PlayerMain(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ArrowButton(state = state, onEvent = onEvent)
+                PrevSongButton(isPrev = true, state = state, onEvent = onEvent)
                 Spacer(modifier = Modifier.width(20.dp))
                 PlayPauseButton(state, onEvent)
                 Spacer(modifier = Modifier.width(20.dp))
-                ArrowButton(isNext = true, state = state, onEvent = onEvent)
+                NextSongButton(state = state, onEvent = onEvent)
             }
         }
     }

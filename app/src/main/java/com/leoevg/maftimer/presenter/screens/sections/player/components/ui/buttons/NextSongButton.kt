@@ -39,12 +39,8 @@ fun NextSongButtonContent(
 ) {
     Icon(
         painter = painterResource(R.drawable.outline_skip_next_24),
-        contentDescription = if (isNext) "Next song" else "Previous song",
+        contentDescription = "Next song",
         modifier = Modifier
-            .rotate(
-                if (isNext) 0f
-                else 180f
-            )
             .size(40.dp)
             .clickable {
                 if (isAuthorized) {
@@ -56,7 +52,7 @@ fun NextSongButtonContent(
 }
 
 
-@Preview(showBackground = true, name = "Previous Button")
+@Preview(showBackground = true, name = "NextSong Button")
 @Composable
 private fun NextSongButtonContentPreview() {
     Surface(
