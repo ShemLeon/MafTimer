@@ -42,7 +42,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 
-import com.leoevg.maftimer.presenter.screens.sections.player.components.TypeOfPlayerIndicators
+
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomOverlay
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
 import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer

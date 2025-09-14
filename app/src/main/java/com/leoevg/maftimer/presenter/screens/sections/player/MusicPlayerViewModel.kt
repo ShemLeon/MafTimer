@@ -210,6 +210,10 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun updateSelectedPage(newPage: Int) {
-        _state.update { it.copy(selectedPage = newPage) }  // Update state
+        _state.update { it.copy(selectedPage = newPage) }  // This syncs state, fixing indicators not reacting
+    }
+
+    fun setLocalLoaded(loaded: Boolean) {
+        _state.update { it.copy(isLocalLoaded = loaded) }  // Update when local files loaded/permissions granted
     }
 }

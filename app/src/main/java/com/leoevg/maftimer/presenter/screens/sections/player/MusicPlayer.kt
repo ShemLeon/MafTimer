@@ -2,10 +2,8 @@ package com.leoevg.maftimer.presenter.screens.sections.player
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.leoevg.maftimer.presenter.screens.sections.player.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
+import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
 import kotlinx.coroutines.launch
 // Временно убрал импорт LocalPlayer
 // import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer
@@ -40,28 +38,17 @@ fun MusicPlayer(
     val actualOnEvent = onEvent ?: viewModel?.let { { event -> it.sendEvent(event) } } ?: {}
 
     // Детект свайпа и обновление state
-
-
     LaunchedEffect(Unit) {
         if (actualState.isAuthorized && viewModel != null) {
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
 
-    val pagerState = rememberPagerState(initialPage = 1, pageCount = { 3 })  // 3 страницы: 0 - dummy left, 1 - main UI, 2 - dummy right
-
-
-    val coroutineScope = rememberCoroutineScope()
-
-    // Детект свайпа и обновление state
-    LaunchedEffect(pagerState.currentPage) {
-        if (pagerState.currentPage != 1) {
-            val newSelectedPage = if (pagerState.currentPage == 0) 0 else 1  // Left swipe -> local (0), right -> spotify (1)
-            viewModel?.updateSelectedPage(newSelectedPage)  // Обновляем state в ViewModel
-            coroutineScope.launch {
-                pagerState.animateScrollToPage(1)  // Возврат на main UI
-            }
-        }
+    val pagerState = rememberPagerState(initialPage = actualState.selectedPage, pageCount = { 2 })  // 0 = local, 1 = spotify
+    // Update selectedPage in ViewModel when page changes
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .collectLatest { page -> viewModel?.updateSelectedPage(page) }
     }
 
 
@@ -73,25 +60,17 @@ fun MusicPlayer(
         verticalArrangement = Arrangement.Bottom
     ) {
         TypeOfPlayerIndicators(selectedPage = pagerState.currentPage)  // Индикаторы сверху
-        // Добавили Spacer для расстояния между индикаторами и pager (чтобы не сливались)
-
         HorizontalPager(state = pagerState) { page ->
-            if (page == 1) {
-                MusicAssembly(
-                    state = actualState,  // Единый UI, данные/оверлей зависят от actualState.selectedPage
-                    onEvent = actualOnEvent,
-                    onSpotifyAuthRequest = onSpotifyAuthRequest
-                )
-            } else {
-                // Dummy для свайпа (пустой, чтобы не показывать ничего лишнего)
-                Box(modifier = Modifier.fillMaxSize()) {}
-            }
+            MusicAssembly(
+                state = actualState.copy(selectedPage = page),  // Pass updated state for this page
+                onEvent = actualOnEvent,
+                onSpotifyAuthRequest = onSpotifyAuthRequest
+            )
         }
     }
 }
 
 
-// 1. Preview: Spotify OK, inside with buttons (authorized, selectedPage = 1)
 @Preview(showBackground = true)
 @Composable
 private fun MusicPlayerSpotifyAuthorizedPreview() {
@@ -110,7 +89,6 @@ private fun MusicPlayerSpotifyAuthorizedPreview() {
     )
 }
 
-// 2. Preview: Spotify overlay (not authorized, selectedPage = 1)
 @Preview(showBackground = true)
 @Composable
 private fun MusicPlayerSpotifyOverlayPreview() {
@@ -124,13 +102,12 @@ private fun MusicPlayerSpotifyOverlayPreview() {
     )
 }
 
-// 3. Preview: Local overlay (selectedPage = 0, assume not "loaded" for overlay)
 @Preview(showBackground = true)
 @Composable
 private fun MusicPlayerLocalOverlayPreview() {
     MusicPlayer(
         state = MusicPlayerState(
-            isAuthorized = false,
+            isLocalLoaded = false,  // Not loaded - trigger local overlay
             selectedPage = 0
         ),
         onEvent = {},
