@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,8 +25,9 @@ import com.leoevg.maftimer.R
 fun CustomOverlay(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    isLocal: Boolean = false
+    state: MusicPlayerState
 ) {
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -39,7 +40,11 @@ fun CustomOverlay(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(if (isLocal) R.drawable.own_overlay else R.drawable.spotify_overlay),
+            painter = painterResource(
+                if (state.selectedPage == 0) R.drawable.own_overlay
+                else if (state.selectedPage == 1) R.drawable.spotify_overlay
+                else R.drawable.spotify_overlay
+            ),
             contentDescription = "Open Spotify",
             modifier = Modifier
                 .size(100.dp)
@@ -51,7 +56,21 @@ fun CustomOverlay(
 @Preview(showBackground = true, widthDp = 411, heightDp = 160)
 @Composable
 fun SpotifyOverlayPreview() {
-    CustomOverlay(modifier = Modifier.size(96.dp), onClick = {})
+    CustomOverlay(
+        state = MusicPlayerState(selectedPage = 1),
+        modifier = Modifier.size(96.dp),
+        onClick = {}
+    )
+}
+
+@Preview(showBackground = true, widthDp = 411, heightDp = 160)
+@Composable
+fun OwnOverlayPreview() {
+    CustomOverlay(
+        state = MusicPlayerState(selectedPage = 0),
+        modifier = Modifier.size(96.dp),
+        onClick = {}
+    )
 }
 
 

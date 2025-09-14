@@ -21,14 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerEvent
@@ -37,13 +36,11 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import com.leoevg.maftimer.R
+import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
+
 import com.leoevg.maftimer.presenter.screens.sections.player.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomOverlay
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
@@ -64,7 +61,7 @@ fun MainScreen(
     Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorized}")
     Logx.debug(TAG, "Music state: $musicState")
 
-    // добавляем логику наблюдения жизненного цикла
+    // Логика наблюдения жизненного цикла
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -74,15 +71,13 @@ fun MainScreen(
                 musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
             }
         }
-        // Добавляем наш observer к жизненному циклу
-        //Теперь при каждом изменении состояния будет вызываться наша лямбда
         lifecycleOwner.lifecycle.addObserver(observer)
         // Remove observer when composable leaves composition
         kotlinx.coroutines.DisposableHandle {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-// ДОБАВИТЬ: Принудительная проверка каждые 3 секунды
+// Принудительная проверка каждые 3 секунды
     LaunchedEffect(Unit) {
         while (true) {
             kotlinx.coroutines.delay(3000)
@@ -113,22 +108,16 @@ private fun MainScreenContent(
     musicPlayerState: MusicPlayerState? = null,
     onMusicPlayerEvent: ((MusicPlayerEvent) -> Unit)? = null
 ) {
-    // Извлекаем высоту экрана в Dp
-    val windowInfo = LocalWindowInfo.current
+    val windowInfo = LocalWindowInfo.current            // Извлекаем высоту экрана в Dp
     val screenHeightDp = windowInfo.containerSize.height.dp
-    // Определяем цвета для градиента
     val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(topGradientColor, bottomGradientColor)
-                )
-            )
-    ) {
-
+            .background(brush = Brush.verticalGradient(colors = listOf(topGradientColor, bottomGradientColor))
+        )
+    ){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -144,28 +133,12 @@ private fun MainScreenContent(
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val pagerState = rememberPagerState(pageCount = { 2 })
-
-            TypeOfPlayerIndicators(selectedPage = pagerState.currentPage)  // Динамические кружочки
-
-            HorizontalPager(state = pagerState) { page ->
-                if (page == 0) {
-                    LocalPlayer() // Локальный плеер
-                } else {
-                    MusicAssembly(
-                        state = musicPlayerState ?: MusicPlayerState(),
-                        onEvent = onMusicPlayerEvent ?: {},
-                        onSpotifyAuthRequest = onSpotifyAuthRequest,
-                        isLocal = false
-                    ) // Spotify плеер
-                }
-            }
-
-            CustomOverlay(  // Оверлей как индикатор выбора
-                onClick = {},  // Нет клика, или добавьте логику
-                isLocal = pagerState.currentPage == 0,
-                modifier = Modifier.alpha(0.5f)  // Полупрозрачный оверлей для видимости выбора
+            MusicPlayer(
+                onSpotifyAuthRequest = onSpotifyAuthRequest,
+                state = musicPlayerState,
+                onEvent = onMusicPlayerEvent
             )
+
         }
     }
 }

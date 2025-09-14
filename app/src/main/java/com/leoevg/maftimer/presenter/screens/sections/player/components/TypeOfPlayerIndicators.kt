@@ -23,7 +23,7 @@ fun TypeOfPlayerIndicators(selectedPage: Int = 0){
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         Box(modifier = Modifier.size(8.dp).clip(CircleShape)
-            .background(if (selectedPage == 0) Color.White else Color.Gray))
+            .background(if (selectedPage == 0) Color(color = 0xef00ffff) else Color.Gray))
         Box(modifier = Modifier.size(8.dp).clip(CircleShape)
             .background(if (selectedPage == 1) Color.White else Color.Gray))
     }

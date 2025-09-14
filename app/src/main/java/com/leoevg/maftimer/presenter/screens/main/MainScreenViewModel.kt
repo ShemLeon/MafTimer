@@ -12,5 +12,4 @@ class MainScreenViewModel @Inject constructor() : ViewModel() {
             MainScreenEvent.OnSpotifyAuthRequest -> TODO()
         }
     }
-
 }

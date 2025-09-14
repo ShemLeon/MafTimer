@@ -11,15 +11,28 @@ private const val TAG = "MusicAssembly"
 fun MusicAssembly(
     state: MusicPlayerState,
     onEvent: (MusicPlayerEvent) -> Unit,
-    onSpotifyAuthRequest: () -> Unit,
-    isLocal: Boolean = false
+    onSpotifyAuthRequest: () -> Unit
 ) {
-    if (isLocal || state.isAuthorized) {
+    if (state.selectedPage == 0 || state.isAuthorized) {
         PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
-        CustomOverlay(onClick = onSpotifyAuthRequest, isLocal = isLocal)
+        CustomOverlay(onClick = onSpotifyAuthRequest, state = state)
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun MusicAssemblyLocalOverlayPreview() {
+    MusicAssembly(
+        state = MusicPlayerState(
+            isAuthorized = false,
+            selectedPage = 0  // Локальный оверлей
+        ),
+        onEvent = {},
+        onSpotifyAuthRequest = {}
+    )
+}
+
 
 
 @Preview(showBackground = true)

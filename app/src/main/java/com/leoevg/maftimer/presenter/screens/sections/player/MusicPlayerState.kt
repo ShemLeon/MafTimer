@@ -9,7 +9,7 @@ data class MusicPlayerState (
     val durationMs: Long = 160L,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val albumCoverUrl: String? = ""
-)
+    val albumCoverUrl: String? = "",
 
-// todo: т.к. есть значение по у молчанию val isAuthorized: Boolean = false, из компонентов можно удалить
+    val selectedPage: Int = 1       // 0 = Local, 1 = spotify
+)
