@@ -3,7 +3,7 @@ package com.leoevg.maftimer.domain.repository
 import com.leoevg.maftimer.data.api.SpotifyPlaybackState
 
 interface ISpotifyRepository {
-    suspend fun play(): Result<Unit>            //
+    suspend fun play(): Result<Unit>
     suspend fun pause(): Result<Unit>
     suspend fun next(): Result<Unit>
     suspend fun previous(): Result<Unit>
