@@ -29,15 +29,13 @@ fun RowScope.CustomSlider(
             state.progressMs.toFloat() / state.durationMs.toFloat()
         else 0f,
         onValueChange = { newValue ->
-            if (state.isAuthorized) {
-                val newPosition = (newValue * state.durationMs).toLong()
-                onEvent(MusicPlayerEvent.OnSeekTo(newPosition))
-            }
+            val newPosition = (newValue * state.durationMs).toLong()
+            onEvent(MusicPlayerEvent.OnSeekTo(newPosition))
         },
         modifier = Modifier
             .weight(1f)
             .height(15.dp),
-        enabled = state.isAuthorized,
+        enabled = true,
         colors = SliderDefaults.colors(
             thumbColor = Color.White,
             activeTrackColor = Color.White,
@@ -61,7 +59,7 @@ fun RowScope.CustomSlider(
                     activeTrackColor = Color.White,
                     inactiveTrackColor = Color.Gray.copy(alpha = 0.5f)
                 ),
-                enabled = state.isAuthorized
+               enabled = true
             )
         }
     )

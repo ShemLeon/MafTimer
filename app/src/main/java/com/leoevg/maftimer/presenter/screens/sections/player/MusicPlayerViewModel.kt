@@ -2,20 +2,26 @@ package com.leoevg.maftimer.presenter.screens.sections.player
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.leoevg.maftimer.presenter.util.Logx
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import com.leoevg.maftimer.data.Song
+import com.leoevg.maftimer.data.getSongs
 import com.leoevg.maftimer.data.repository.SpotifyRepository
+import com.leoevg.maftimer.presenter.util.Logx
 import com.leoevg.maftimer.presenter.util.SpotifyAuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
@@ -23,36 +29,107 @@ class MusicPlayerViewModel @Inject constructor(
     private val authManager: SpotifyAuthManager,
     @ApplicationContext private val appContext: Context
 ) : ViewModel() {
-    companion object {        private const val TAG = "MusicPlayerViewModel"    }
+    companion object {private const val TAG = "MusicPlayerViewModel"}
     private val _state = MutableStateFlow(MusicPlayerState())
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
+    // Local (Media3/ExoPlayer)
+    private val exoPlayer: ExoPlayer = ExoPlayer.Builder(appContext).build()
+    private var localSongs: List<Song> = emptyList()
+    private var localCurrentIndex: Int = 0
+    private var progressJob: Job? = null
 
-    // Устанавливаем токен при инициализации
+    private val playerListener = object : Player.Listener {
+        override fun onIsPlayingChanged(isPlay: Boolean) {
+            _state.update { it.copy(isPlaying = isPlay) }
+            if (isPlay) startProgressUpdates() else stopProgressUpdates()
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_READY) {
+                _state.update { it.copy(durationMs = exoPlayer.duration.coerceAtLeast(0L)) }
+            }
+            if (playbackState == Player.STATE_ENDED) {
+                nextLocal()
+            }
+        }
+    }
+
     init {
+        // Restore Spotify token
         authManager.getStoredToken()?.let { token ->
             spotifyRepository.setAccessToken(token)
         }
+        exoPlayer.addListener(playerListener)
     }
+
+
     fun sendEvent(event: MusicPlayerEvent) {
+        val isLocal = state.value.selectedPage == 0
         when (event) {
             is MusicPlayerEvent.OnSpotifyAuthRequest -> checkAuthorization()
-            is MusicPlayerEvent.OnStartBtnClicked -> play()
-            is MusicPlayerEvent.OnPauseBtnClicked -> pause()
-            is MusicPlayerEvent.OnNextSongBtnClicked -> next()
-            is MusicPlayerEvent.OnPreviousSongBtnClicked -> previous()
-            is MusicPlayerEvent.OnSeekTo -> seekTo(event.positionMs)
-            is MusicPlayerEvent.OnRefreshPlayback -> refreshPlayback()
-            is MusicPlayerEvent.OnOverlayClicked -> {
-                Logx.debug(TAG, "OnOverlayClicked event received")
-                openSpotifyApp()
+            is MusicPlayerEvent.OnStartBtnClicked -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) playLocal()
+                } else {
+                    if (state.value.isAuthorized) play()
+                }
             }
+            is MusicPlayerEvent.OnPauseBtnClicked -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) pauseLocal()
+                } else {
+                    if (state.value.isAuthorized) pause()
+                }
+            }
+            is MusicPlayerEvent.OnNextSongBtnClicked -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) nextLocal()
+                } else {
+                    if (state.value.isAuthorized) next()
+                }
+            }
+
+            is MusicPlayerEvent.OnNextSongBtnClicked -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) nextLocal()
+                } else {
+                    if (state.value.isAuthorized) next()
+                }
+            }
+
+            is MusicPlayerEvent.OnPreviousSongBtnClicked -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) previousLocal()
+                } else {
+                    if (state.value.isAuthorized) previous()
+                }
+            }
+
+            is MusicPlayerEvent.OnSeekTo -> {
+                if (isLocal) {
+                    if (state.value.isLocalLoaded) seekLocal(event.positionMs)
+                } else {
+                    if (state.value.isAuthorized) seekTo(event.positionMs)
+                }
+            }
+
+            is MusicPlayerEvent.OnRefreshPlayback -> {
+                if (isLocal) refreshLocal() else refreshPlayback()
+            }
+
+            is MusicPlayerEvent.OnOverlayClicked -> {
+                // Open Spotify app if not local page
+                if (!isLocal) openSpotifyApp()
+            }
+
             is MusicPlayerEvent.OnCheckAuthorization -> {
-                Logx.debug(TAG, "OnCheckAuthorization event received")
                 checkAuthorizationAndRefresh()
             }
+
         }
     }
 
+    // ---- Spotify (remote) ----
     private fun checkAuthorization() {
         val isAuthorized = authManager.getStoredToken() != null
         _state.update { it.copy(isAuthorized = isAuthorized) }
@@ -216,4 +293,104 @@ class MusicPlayerViewModel @Inject constructor(
     fun setLocalLoaded(loaded: Boolean) {
         _state.update { it.copy(isLocalLoaded = loaded) }  // Update when local files loaded/permissions granted
     }
+
+    // Called from UI after the permission is granted
+    fun onLocalPermissionGranted() {
+        initLocalPlayer()
+        setLocalLoaded(true)
+    }
+
+    // ---- Local (Media3/ExoPlayer) ----
+
+    private fun initLocalPlayer() {
+        viewModelScope.launch {
+            localSongs = getSongs(appContext)
+            _state.update { it.copy(isLocalLoaded = localSongs.isNotEmpty()) }
+            if (localSongs.isNotEmpty()) {
+                localCurrentIndex = 0
+                prepareAndPlayLocal(localCurrentIndex, play = false)
+            }
+        }
+    }
+
+    private fun prepareAndPlayLocal(index: Int, play: Boolean = true) {
+        val song = localSongs.getOrNull(index) ?: return
+        exoPlayer.setMediaItem(MediaItem.fromUri(song.data))
+        exoPlayer.prepare()
+        exoPlayer.playWhenReady = play
+        _state.update {
+            it.copy(
+                title = song.title ?: "",
+                artist = song.artist ?: "",
+                progressMs = 0L
+            )
+        }
+    }
+
+    private fun playLocal() {
+        if (localSongs.isEmpty()) return
+        if (exoPlayer.playbackState == Player.STATE_IDLE) {
+            prepareAndPlayLocal(localCurrentIndex, play = true)
+        } else {
+            exoPlayer.play()
+        }
+    }
+
+    private fun pauseLocal() {
+        exoPlayer.pause()
+    }
+
+    private fun nextLocal() {
+        if (localSongs.isEmpty()) return
+        localCurrentIndex = (localCurrentIndex + 1) % localSongs.size
+        prepareAndPlayLocal(localCurrentIndex, play = true)
+    }
+
+    private fun previousLocal() {
+        if (localSongs.isEmpty()) return
+        localCurrentIndex = if (localCurrentIndex - 1 < 0) localSongs.size - 1 else localCurrentIndex - 1
+        prepareAndPlayLocal(localCurrentIndex, play = true)
+    }
+
+    private fun seekLocal(positionMs: Long) {
+        exoPlayer.seekTo(positionMs)
+        _state.update { it.copy(progressMs = positionMs) }
+    }
+
+    private fun refreshLocal() {
+        if (localSongs.isEmpty()) return
+        val song = localSongs.getOrNull(localCurrentIndex)
+        _state.update {
+            it.copy(
+                title = song?.title.orEmpty(),
+                artist = song?.artist.orEmpty(),
+                durationMs = exoPlayer.duration.coerceAtLeast(0L),
+                progressMs = exoPlayer.currentPosition.coerceAtLeast(0L),
+                isPlaying = exoPlayer.isPlaying
+            )
+        }
+    }
+
+    private fun startProgressUpdates() {
+        progressJob?.cancel()
+        progressJob = viewModelScope.launch {
+            while (true) {
+                _state.update { it.copy(progressMs = exoPlayer.currentPosition.coerceAtLeast(0L)) }
+                delay(500)
+            }
+        }
+    }
+
+    private fun stopProgressUpdates() {
+        progressJob?.cancel()
+        progressJob = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopProgressUpdates()
+        exoPlayer.removeListener(playerListener)
+        exoPlayer.release()
+    }
+
 }

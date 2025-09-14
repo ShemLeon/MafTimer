@@ -18,7 +18,7 @@ fun MusicAssembly(
     if  ((isLocal && state.isLocalLoaded) || (!isLocal && state.isAuthorized)) {
         PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
-        CustomOverlay(onClick = onSpotifyAuthRequest, state = state)
+        CustomOverlay(onClick = { if (!isLocal) onEvent(MusicPlayerEvent.OnOverlayClicked) }, state = state)
     }
 }
 @Preview(showBackground = true)

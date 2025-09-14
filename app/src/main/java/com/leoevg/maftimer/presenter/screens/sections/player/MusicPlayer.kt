@@ -1,32 +1,31 @@
 package com.leoevg.maftimer.presenter.screens.sections.player
 
+import android.Manifest
+import android.os.Build
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.isGranted
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Arrangement
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
 import kotlinx.coroutines.launch
-// Временно убрал импорт LocalPlayer
 // import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MusicPlayer(
     onSpotifyAuthRequest: () -> Unit = {},
@@ -43,6 +42,18 @@ fun MusicPlayer(
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
+
+
+// Permission → notify VM once granted (short, Android 13+ only)
+    val permissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_AUDIO)
+    LaunchedEffect(permissionState.status) {
+        if (permissionState.status.isGranted) {
+            viewModel?.onLocalPermissionGranted()
+        } else {
+            permissionState.launchPermissionRequest()
+        }
+    }
+
 
     val pagerState = rememberPagerState(initialPage = actualState.selectedPage, pageCount = { 2 })  // 0 = local, 1 = spotify
     // Update selectedPage in ViewModel when page changes
@@ -69,6 +80,7 @@ fun MusicPlayer(
         }
     }
 }
+
 
 
 @Preview(showBackground = true)
