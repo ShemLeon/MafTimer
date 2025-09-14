@@ -11,5 +11,6 @@ data class MusicPlayerState (
     val error: String? = null,
     val albumCoverUrl: String? = "",
 
-    val selectedPage: Int = 1       // 0 = Local, 1 = spotify
+    val selectedPage: Int = 1,           // 0 = Local, 1 = spotify
+    val isLocalLoaded: Boolean = false  // New field for local "authorized/loaded"
 )

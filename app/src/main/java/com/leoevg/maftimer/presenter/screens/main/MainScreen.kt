@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,14 +78,14 @@ fun MainScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-// Принудительная проверка каждые 3 секунды
-    LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(3000)
-            Logx.debug(TAG, "Periodic check → checking authorization")
-            musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
-        }
-    }
+//// Принудительная проверка каждые 3 секунды
+//    LaunchedEffect(Unit) {
+//        while (true) {
+//            kotlinx.coroutines.delay(3000)
+//            Logx.debug(TAG, "Periodic check → checking authorization")
+//            musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
+//        }
+//    }
 
     MainScreenContent(
         timerState = timerState,
@@ -108,18 +109,24 @@ private fun MainScreenContent(
     musicPlayerState: MusicPlayerState? = null,
     onMusicPlayerEvent: ((MusicPlayerEvent) -> Unit)? = null
 ) {
-    val windowInfo = LocalWindowInfo.current            // Извлекаем высоту экрана в Dp
-    val screenHeightDp = windowInfo.containerSize.height.dp
     val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
     val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(colors = listOf(topGradientColor, bottomGradientColor))
-        )
-    ){
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        topGradientColor,
+                        bottomGradientColor
+                    )
+                )
+            )
+    ) {
         Column(
+            modifier = Modifier.fillMaxSize(),  // Fixed fillMaxSize to prevent shifting
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
             TitleApplication()
             TimerAssembly(state = timerState, onEvent = onTimerEvent)
@@ -130,6 +137,7 @@ private fun MainScreenContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .height(200.dp)
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -144,54 +152,79 @@ private fun MainScreenContent(
 }
 
 
-    @Preview(showBackground = true)
-    @Composable
-    private fun MainScreenPreview() {
-        MainScreenContent(
-            timerState = TimerState(
-                progressFraction = 0.3f,
-                isRunning = false,
-                isPaused = false,
-                isFinished = false,
-                remainingSeconds = 42
-            ),
-            onTimerEvent = {},
-            onEvent = { _: MainScreenEvent -> },
-            onSpotifyAuthRequest = {},
-            musicPlayerState = MusicPlayerState(
-                isAuthorized = false,
-                artist = "Preview Artist",
-                title = "Preview Song",
-                isPlaying = false,
-                progressMs = 60000L,
-                durationMs = 180000L
-            ),
-            onMusicPlayerEvent = {}
-        )
-    }
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenPreview() {
+    MainScreenContent(
+        timerState = TimerState(
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false,
+            remainingSeconds = 42
+        ),
+        onTimerEvent = {},
+        onEvent = { _: MainScreenEvent -> },
+        onSpotifyAuthRequest = {},
+        musicPlayerState = MusicPlayerState(
+            isAuthorized = false,
+            artist = "Preview Artist",
+            title = "Preview Song",
+            isPlaying = false,
+            progressMs = 60000L,
+            durationMs = 180000L
+        ),
+        onMusicPlayerEvent = {}
+    )
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    private fun MainScreenWithoutOverlayPreview() {
-        MainScreenContent(
-            timerState = TimerState(
-                progressFraction = 0.3f,
-                isRunning = false,
-                isPaused = false,
-                isFinished = false,
-                remainingSeconds = 42
-            ),
-            onTimerEvent = {},
-            onEvent = { _: MainScreenEvent -> },
-            onSpotifyAuthRequest = {},
-            musicPlayerState = MusicPlayerState(
-                isAuthorized = true,
-                artist = "Preview Artist",
-                title = "Preview Song",
-                isPlaying = false,
-                progressMs = 60000L,
-                durationMs = 180000L
-            ),
-            onMusicPlayerEvent = {}
-        )
-    }
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenWithoutOverlayPreview() {
+    MainScreenContent(
+        timerState = TimerState(
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false,
+            remainingSeconds = 42
+        ),
+        onTimerEvent = {},
+        onEvent = { _: MainScreenEvent -> },
+        onSpotifyAuthRequest = {},
+        musicPlayerState = MusicPlayerState(
+            isAuthorized = true,
+            artist = "Preview Artist",
+            title = "Preview Song",
+            isPlaying = false,
+            progressMs = 60000L,
+            durationMs = 180000L
+        ),
+        onMusicPlayerEvent = {}
+    )
+
+
+}
+
+// 3. Preview: Local overlay (selectedPage = 0, adjust condition if needed, e.g. isLocalLoaded = false)
+@Preview(showBackground = true)
+@Composable
+private fun MainScreenLocalOverlayPreview() {
+    MainScreenContent(
+        timerState = TimerState(
+            progressFraction = 0.3f,
+            isRunning = false,
+            isPaused = false,
+            isFinished = false,
+            remainingSeconds = 42
+        ),
+        onTimerEvent = {},
+        onEvent = { _: MainScreenEvent -> },
+        onSpotifyAuthRequest = {},
+        musicPlayerState = MusicPlayerState(
+            isAuthorized = false,  // Or your condition for local overlay
+            selectedPage = 0
+        ),
+        onMusicPlayerEvent = {}
+    )
+}

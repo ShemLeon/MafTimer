@@ -210,6 +210,6 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun updateSelectedPage(newPage: Int) {
-        _state.update { it.copy(selectedPage = newPage) }  // Предполагая, что у тебя MutableStateFlow<_state>
+        _state.update { it.copy(selectedPage = newPage) }  // Update state
     }
 }

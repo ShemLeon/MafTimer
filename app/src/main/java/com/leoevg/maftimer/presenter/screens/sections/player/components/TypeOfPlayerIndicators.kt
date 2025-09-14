@@ -16,12 +16,13 @@ import androidx.compose.ui.unit.dp
 import com.leoevg.maftimer.ui.theme.MafTimerTheme
 
 @Composable
-fun TypeOfPlayerIndicators(selectedPage: Int = 0){
+fun TypeOfPlayerIndicators(selectedPage: Int = 1){
     Row(
         modifier = Modifier
             .padding(bottom = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
+        // Left circle for local (selectedPage = 0)
         Box(modifier = Modifier.size(8.dp).clip(CircleShape)
             .background(if (selectedPage == 0) Color(color = 0xef00ffff) else Color.Gray))
         Box(modifier = Modifier.size(8.dp).clip(CircleShape)
@@ -31,8 +32,16 @@ fun TypeOfPlayerIndicators(selectedPage: Int = 0){
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF121212)
-fun IndicatorsPreviewLocal() {
+fun IndicatorsLocalPreview() {
     MafTimerTheme {
-        TypeOfPlayerIndicators(selectedPage = 0)
+        TypeOfPlayerIndicators(selectedPage = 0)  // Left white, right gray
+    }
+}
+
+@Composable
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
+fun IndicatorsSpotifyPreview() {
+    MafTimerTheme {
+        TypeOfPlayerIndicators(selectedPage = 1)  // Left gray, right white
     }
 }

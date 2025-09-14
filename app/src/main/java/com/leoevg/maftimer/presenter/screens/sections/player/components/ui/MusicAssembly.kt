@@ -13,31 +13,44 @@ fun MusicAssembly(
     onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
-    if (state.selectedPage == 0 || state.isAuthorized) {
+    val isLocal = state.selectedPage == 0
+    // Логика: для local - if isLocalLoaded, for spotify - if isAuthorized
+    if  ((isLocal && state.isLocalLoaded) || (!isLocal && state.isAuthorized)) {
         PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
         CustomOverlay(onClick = onSpotifyAuthRequest, state = state)
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 private fun MusicAssemblyLocalOverlayPreview() {
     MusicAssembly(
         state = MusicPlayerState(
             isAuthorized = false,
-            selectedPage = 0  // Локальный оверлей
+            isLocalLoaded = false,  // Not loaded - show local overlay
+            selectedPage = 0
         ),
         onEvent = {},
         onSpotifyAuthRequest = {}
     )
 }
 
-
+@Preview(showBackground = true)
+@Composable
+private fun MusicAssemblySpotifyOverlayPreview() {
+    MusicAssembly(
+        state = MusicPlayerState(
+            isAuthorized = false,
+            selectedPage = 1  // Not authorized - show spotify overlay
+        ),
+        onEvent = {},
+        onSpotifyAuthRequest = {}
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
-private fun MusicAssemblyPreview() {
+private fun MusicAssemblyAuthorizedPreview() {
     MusicAssembly(
         state = MusicPlayerState(
             isAuthorized = true,
@@ -45,7 +58,8 @@ private fun MusicAssemblyPreview() {
             title = "Balalay",
             isPlaying = true,
             progressMs = 125000L,
-            durationMs = 180000L
+            durationMs = 180000L,
+            selectedPage = 1
         ),
         onEvent = {},
         onSpotifyAuthRequest = {}
@@ -54,15 +68,16 @@ private fun MusicAssemblyPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun MusicAssemblyPreviewOverlay() {
+private fun MusicAssemblyLocalLoadedPreview() {
     MusicAssembly(
         state = MusicPlayerState(
-            isAuthorized = false,
-            artist = "Ivo Bobul",
-            title = "Balalay",
+            isLocalLoaded = true,  // Loaded - show PlayerMain for local
+            artist = "Local Artist",
+            title = "Local Song",
             isPlaying = true,
             progressMs = 125000L,
-            durationMs = 180000L
+            durationMs = 180000L,
+            selectedPage = 0
         ),
         onEvent = {},
         onSpotifyAuthRequest = {}
