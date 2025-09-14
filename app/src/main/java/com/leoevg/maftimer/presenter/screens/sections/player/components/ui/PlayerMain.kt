@@ -81,11 +81,11 @@ fun PlayerMain(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PrevSongButton(isPrev = true, state = state, onEvent = onEvent)
+                PrevSongButton(onEvent = onEvent)
                 Spacer(modifier = Modifier.width(20.dp))
                 PlayPauseButton(state, onEvent)
                 Spacer(modifier = Modifier.width(20.dp))
-                NextSongButton(state = state, onEvent = onEvent)
+                NextSongButton(onEvent = onEvent)
             }
         }
     }
