@@ -2,7 +2,7 @@ package com.leoevg.maftimer.presenter.screens.main
 
 
 import com.leoevg.maftimer.presenter.util.Logx
-import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.background
@@ -18,14 +18,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
-import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerState
@@ -35,9 +37,20 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
-
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import com.leoevg.maftimer.R
+import com.leoevg.maftimer.presenter.screens.sections.player.components.TypeOfPlayerIndicators
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomOverlay
+import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
+import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer
 
 private const val TAG = "MainScreen"
+
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
@@ -115,6 +128,7 @@ private fun MainScreenContent(
                 )
             )
     ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -130,64 +144,81 @@ private fun MainScreenContent(
                 .padding(bottom = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TypeOfPlayerIndicators()  // Три маленьких кружочка сверху
-            MusicPlayer(
-                onSpotifyAuthRequest = onSpotifyAuthRequest,
-                state = musicPlayerState,
-                onEvent = onMusicPlayerEvent
+            val pagerState = rememberPagerState(pageCount = { 2 })
+
+            TypeOfPlayerIndicators(selectedPage = pagerState.currentPage)  // Динамические кружочки
+
+            HorizontalPager(state = pagerState) { page ->
+                if (page == 0) {
+                    LocalPlayer() // Локальный плеер
+                } else {
+                    MusicAssembly(
+                        state = musicPlayerState ?: MusicPlayerState(),
+                        onEvent = onMusicPlayerEvent ?: {},
+                        onSpotifyAuthRequest = onSpotifyAuthRequest,
+                        isLocal = false
+                    ) // Spotify плеер
+                }
+            }
+
+            CustomOverlay(  // Оверлей как индикатор выбора
+                onClick = {},  // Нет клика, или добавьте логику
+                isLocal = pagerState.currentPage == 0,
+                modifier = Modifier.alpha(0.5f)  // Полупрозрачный оверлей для видимости выбора
             )
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun MainScreenPreview() {
-    MainScreenContent(
-        timerState = TimerState(
-            progressFraction = 0.3f,
-            isRunning = false,
-            isPaused = false,
-            isFinished = false,
-            remainingSeconds = 42
-        ),
-        onTimerEvent = {},
-        onEvent = { _: MainScreenEvent -> },
-        onSpotifyAuthRequest = {},
-        musicPlayerState = MusicPlayerState(
-            isAuthorized = false,
-            artist = "Preview Artist",
-            title = "Preview Song",
-            isPlaying = false,
-            progressMs = 60000L,
-            durationMs = 180000L
-        ),
-        onMusicPlayerEvent = {}
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-private fun MainScreenWithoutOverlayPreview() {
-    MainScreenContent(
-        timerState = TimerState(
-            progressFraction = 0.3f,
-            isRunning = false,
-            isPaused = false,
-            isFinished = false,
-            remainingSeconds = 42
-        ),
-        onTimerEvent = {},
-        onEvent = { _: MainScreenEvent -> },
-        onSpotifyAuthRequest = {},
-        musicPlayerState = MusicPlayerState(
-            isAuthorized = true,
-            artist = "Preview Artist",
-            title = "Preview Song",
-            isPlaying = false,
-            progressMs = 60000L,
-            durationMs = 180000L
-        ),
-        onMusicPlayerEvent = {}
-    )
-}
+    @Preview(showBackground = true)
+    @Composable
+    private fun MainScreenPreview() {
+        MainScreenContent(
+            timerState = TimerState(
+                progressFraction = 0.3f,
+                isRunning = false,
+                isPaused = false,
+                isFinished = false,
+                remainingSeconds = 42
+            ),
+            onTimerEvent = {},
+            onEvent = { _: MainScreenEvent -> },
+            onSpotifyAuthRequest = {},
+            musicPlayerState = MusicPlayerState(
+                isAuthorized = false,
+                artist = "Preview Artist",
+                title = "Preview Song",
+                isPlaying = false,
+                progressMs = 60000L,
+                durationMs = 180000L
+            ),
+            onMusicPlayerEvent = {}
+        )
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    private fun MainScreenWithoutOverlayPreview() {
+        MainScreenContent(
+            timerState = TimerState(
+                progressFraction = 0.3f,
+                isRunning = false,
+                isPaused = false,
+                isFinished = false,
+                remainingSeconds = 42
+            ),
+            onTimerEvent = {},
+            onEvent = { _: MainScreenEvent -> },
+            onSpotifyAuthRequest = {},
+            musicPlayerState = MusicPlayerState(
+                isAuthorized = true,
+                artist = "Preview Artist",
+                title = "Preview Song",
+                isPlaying = false,
+                progressMs = 60000L,
+                durationMs = 180000L
+            ),
+            onMusicPlayerEvent = {}
+        )
+    }

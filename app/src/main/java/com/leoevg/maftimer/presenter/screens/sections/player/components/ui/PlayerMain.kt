@@ -1,6 +1,5 @@
 package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
-
 import androidx.compose.foundation.layout.height
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.info.TextDurationSong
 import androidx.compose.foundation.layout.Arrangement

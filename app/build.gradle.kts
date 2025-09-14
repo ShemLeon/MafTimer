@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -47,6 +48,10 @@ android {
 }
 
 dependencies {
+
+    implementation("io.coil-kt:coil-compose:2.7.0") // Для AsyncImage
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3") // Для разрешений
+
     // Media3 dependencies
     implementation("androidx.media3:media3-exoplayer:1.5.0")
     implementation("androidx.media3:media3-ui:1.5.0")

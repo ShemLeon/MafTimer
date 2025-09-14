@@ -1,31 +1,23 @@
 package com.leoevg.maftimer.presenter.screens.sections.player.components.ui
 
-
-import com.leoevg.maftimer.presenter.util.Logx
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 
 private const val TAG = "MusicAssembly"
+
 @Composable
 fun MusicAssembly(
     state: MusicPlayerState,
     onEvent: (MusicPlayerEvent) -> Unit,
-    onSpotifyAuthRequest: () -> Unit
+    onSpotifyAuthRequest: () -> Unit,
+    isLocal: Boolean = false
 ) {
-    if (state.isAuthorized) {
-        Logx.success(TAG, "Authorized → show player")
-        PlayerMain(
-            state = state,
-            onEvent = onEvent,
-            onSpotifyAuthRequest = onSpotifyAuthRequest
-        )
+    if (isLocal || state.isAuthorized) {
+        PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
-        Logx.info(TAG, "Showing overlay, isAuthorized=${state.isAuthorized}")
-        CustomOverlay(
-            onClick = onSpotifyAuthRequest
-        )
+        CustomOverlay(onClick = onSpotifyAuthRequest, isLocal = isLocal)
     }
 }
 

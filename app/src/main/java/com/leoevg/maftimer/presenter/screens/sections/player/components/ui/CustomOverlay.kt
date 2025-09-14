@@ -24,7 +24,8 @@ import com.leoevg.maftimer.R
 @Composable
 fun CustomOverlay(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isLocal: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -38,7 +39,7 @@ fun CustomOverlay(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.spotify_overlay),
+            painter = painterResource(if (isLocal) R.drawable.own_overlay else R.drawable.spotify_overlay),
             contentDescription = "Open Spotify",
             modifier = Modifier
                 .size(100.dp)
@@ -52,3 +53,5 @@ fun CustomOverlay(
 fun SpotifyOverlayPreview() {
     CustomOverlay(modifier = Modifier.size(96.dp), onClick = {})
 }
+
+

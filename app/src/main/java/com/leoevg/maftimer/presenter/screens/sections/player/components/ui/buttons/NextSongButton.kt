@@ -29,7 +29,7 @@ fun NextSongButton(
             contentDescription = "Next song",
             modifier = Modifier
                 .size(40.dp),
-            tint = Color(0x80fc520d)
+            tint = Color(0xFFFFFFFF)
         )
     }
 

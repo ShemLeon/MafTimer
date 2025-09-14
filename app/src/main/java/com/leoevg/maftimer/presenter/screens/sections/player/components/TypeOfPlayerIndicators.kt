@@ -1,4 +1,4 @@
-package com.leoevg.maftimer.presenter.screens.sections.timer.components
+package com.leoevg.maftimer.presenter.screens.sections.player.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,22 +13,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.leoevg.maftimer.ui.theme.MafTimerTheme
 
 @Composable
-fun TypeOfPlayerIndicators(){
+fun TypeOfPlayerIndicators(selectedPage: Int = 0){
     Row(
         modifier = Modifier
             .padding(bottom = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Gray))
-        Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.White))
-        Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Gray))
+        Box(modifier = Modifier.size(8.dp).clip(CircleShape)
+            .background(if (selectedPage == 0) Color.White else Color.Gray))
+        Box(modifier = Modifier.size(8.dp).clip(CircleShape)
+            .background(if (selectedPage == 1) Color.White else Color.Gray))
     }
 }
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFF121212)
-fun IndicatorsPreview() {
-    TypeOfPlayerIndicators()
+fun IndicatorsPreviewLocal() {
+    MafTimerTheme {
+        TypeOfPlayerIndicators(selectedPage = 0)
+    }
 }
