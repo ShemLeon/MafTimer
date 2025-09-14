@@ -37,7 +37,7 @@ fun MusicPlayer(
     val actualOnEvent = onEvent ?: viewModel?.let { { event -> it.sendEvent(event) } } ?: {}
 
     // Детект свайпа и обновление state
-    LaunchedEffect(Unit) {
+    LaunchedEffect(actualState.isAuthorized) {
         if (actualState.isAuthorized && viewModel != null) {
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }

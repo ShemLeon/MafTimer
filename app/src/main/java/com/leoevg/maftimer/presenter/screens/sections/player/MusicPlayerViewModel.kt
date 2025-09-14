@@ -25,14 +25,15 @@ class MusicPlayerViewModel @Inject constructor(
     private val _state = MutableStateFlow(MusicPlayerState())
     val state: StateFlow<MusicPlayerState> = _state.asStateFlow()
 
+    // Periodic pull for local progress to keep UI smooth
     private var localProgressJob: Job? = null
 
     init {
-        // Restore Spotify token and set initial auth flag
+        // Restore token to repository and set initial auth flag
         spotify.setAccessFromStored()
         _state.update { it.copy(isAuthorized = spotify.isAuthorized()) }
 
-        // Observe local player and reduce to UI state
+        // Observe local player state and reduce it into UI state
         viewModelScope.launch {
             local.state.collect { lp ->
                 _state.update { MusicPlayerStateReducer.withLocal(it, lp) }
@@ -109,20 +110,20 @@ class MusicPlayerViewModel @Inject constructor(
         if (newPage == 0) {
             local.refresh()
         } else {
-            if (spotify.isAuthorized()) {
-                refreshRemote()
-            } else {
-                _state.update { it.copy(isAuthorized = false) }
-            }
+            // When switching to Spotify page, ensure repo has the latest token and refresh
+            spotify.setAccessFromStored()
+            val authorized = spotify.isAuthorized()
+            _state.update { it.copy(isAuthorized = authorized) }
+            if (authorized) refreshRemote()
         }
     }
 
-    // Called from UI after Android 13+ permission is granted
+    // Called by UI after Android 13+ READ_MEDIA_AUDIO is granted
     fun onLocalPermissionGranted() {
         viewModelScope.launch { local.initLibrary() }
     }
 
-    // Backward compatibility (overlay logic), reducer will overwrite with real readiness
+    // Optional: keeps overlay logic backward compatible; reducer will overwrite when local becomes ready
     fun setLocalLoaded(loaded: Boolean) {
         _state.update { it.copy(isLocalLoaded = loaded) }
     }
@@ -135,7 +136,11 @@ class MusicPlayerViewModel @Inject constructor(
         _state.update { it.copy(isAuthorized = spotify.isAuthorized()) }
     }
 
+    // IMPORTANT: pick up new token on resume before checking auth
     private fun checkAuthorizationAndMaybeRefresh() {
+        // Pull latest token from storage into repository/controller
+        spotify.setAccessFromStored()
+
         val authorized = spotify.isAuthorized()
         _state.update { it.copy(isAuthorized = authorized) }
         if (authorized) refreshRemote()

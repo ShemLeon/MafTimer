@@ -81,11 +81,11 @@ class MainActivity : ComponentActivity() {
         Logx.info(TAG, "onPause")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Logx.info(TAG, "onDestroy → clearing auth token")
-        spotifyAuthManager.clearToken()
-    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        Logx.info(TAG, "onDestroy → clearing auth token")
+//        spotifyAuthManager.clearToken()
+//    }
 
     private fun handleIntent(intent: Intent) {
         if (intent.data?.scheme == "com.leoevg.maftimer") {

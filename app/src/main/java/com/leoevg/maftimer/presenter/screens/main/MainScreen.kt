@@ -40,6 +40,7 @@ import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAsse
 
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.DisposableEffect
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 
 
@@ -62,22 +63,17 @@ fun MainScreen(
     Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorized}")
     Logx.debug(TAG, "Music state: $musicState")
 
-    // Логика наблюдения жизненного цикла
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    LaunchedEffect(lifecycleOwner) {
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            Logx.info(TAG, "Lifecycle event: $event")
             if (event == Lifecycle.Event.ON_RESUME) {
-                Logx.action(TAG, "App resumed → checking authorization")
                 musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        // Remove observer when composable leaves composition
-        kotlinx.coroutines.DisposableHandle {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+
 //// Принудительная проверка каждые 3 секунды
 //    LaunchedEffect(Unit) {
 //        while (true) {
