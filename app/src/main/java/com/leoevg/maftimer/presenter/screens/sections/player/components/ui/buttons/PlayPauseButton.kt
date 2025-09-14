@@ -28,11 +28,8 @@ fun PlayPauseButton(
         modifier = Modifier
             .size((40 * 1.1).dp)
             .clickable {
-                if (state.isAuthorized) {
-                    if (state.isPlaying)
-                        onEvent(MusicPlayerEvent.OnPauseBtnClicked)
-                    else onEvent(MusicPlayerEvent.OnStartBtnClicked)
-                }
+                if (state.isPlaying) onEvent(MusicPlayerEvent.OnPauseBtnClicked)
+                else onEvent(MusicPlayerEvent.OnStartBtnClicked)
             },
         contentScale = ContentScale.Fit
     )

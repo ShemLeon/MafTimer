@@ -53,10 +53,11 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.37.3") // Для разрешений
 
     // Media3 dependencies
-    implementation("androidx.media3:media3-exoplayer:1.5.0")
-    implementation("androidx.media3:media3-ui:1.5.0")
-    implementation("androidx.media3:media3-session:1.5.0")
-    implementation("androidx.media3:media3-common:1.5.0")
+    // Replace existing Media3 dependencies (lines 56-59) with:
+    implementation(libs.androidx.media3.exoplayer.v171)
+    implementation(libs.androidx.media3.ui.v171)
+    implementation(libs.androidx.media3.session.v171)
+    implementation(libs.androidx.media3.common.v171)
 
 // Для работы с Spotify Web API
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
