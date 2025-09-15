@@ -1,7 +1,6 @@
 package com.leoevg.maftimer.presenter.screens.sections.player
 
 import android.Manifest
-import android.os.Build
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.isGranted
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,8 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TypeOfPlayerIndicators
-import kotlinx.coroutines.launch
-// import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
