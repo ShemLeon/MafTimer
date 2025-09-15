@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.leoevg.maftimer.presenter.screens.settings.SettingsScreen
 import com.leoevg.maftimer.presenter.screens.main.MainScreen
+import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalSongsScreen
 
 @Composable
 fun MainNavHost(
@@ -30,6 +31,16 @@ fun MainNavHost(
         composable<NavigationPaths.SettingsScreenSealed> {
             SettingsScreen(
                 onNavigateHome = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<NavigationPaths.LocalSongsScreenSealed> {
+            LocalSongsScreen(
+                onBack = { navController.popBackStack() },
+                onPick = { _, _ ->
+                    // For now just close the list; hook playback in the next step
                     navController.popBackStack()
                 }
             )
