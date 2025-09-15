@@ -14,7 +14,7 @@ fun MusicAssembly(
     onSpotifyAuthRequest: () -> Unit
 ) {
     val isLocal = state.selectedPage == 0
-    if  ((isLocal && state.isLocalLoaded) || (!isLocal && state.isAuthorized)) {
+    if  ((isLocal && state.isLocalLoaded) || (!isLocal && state.isAuthorizedSpotify)) {
         PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
         CustomOverlay(
@@ -31,7 +31,7 @@ fun MusicAssembly(
 private fun MusicAssemblyLocalOverlayPreview() {
     MusicAssembly(
         state = MusicPlayerState(
-            isAuthorized = false,
+            isAuthorizedSpotify = false,
             isLocalLoaded = false,  // Not loaded - show local overlay
             selectedPage = 0
         ),
@@ -45,7 +45,7 @@ private fun MusicAssemblyLocalOverlayPreview() {
 private fun MusicAssemblySpotifyOverlayPreview() {
     MusicAssembly(
         state = MusicPlayerState(
-            isAuthorized = false,
+            isAuthorizedSpotify = false,
             selectedPage = 1  // Not authorized - show spotify overlay
         ),
         onEvent = {},
@@ -58,7 +58,7 @@ private fun MusicAssemblySpotifyOverlayPreview() {
 private fun MusicAssemblyAuthorizedPreview() {
     MusicAssembly(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,

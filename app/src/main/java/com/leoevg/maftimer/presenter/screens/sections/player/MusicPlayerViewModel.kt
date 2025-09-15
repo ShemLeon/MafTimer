@@ -31,7 +31,7 @@ class MusicPlayerViewModel @Inject constructor(
     init {
         // Restore token to repository and set initial auth flag
         spotify.setAccessFromStored()
-        _state.update { it.copy(isAuthorized = spotify.isAuthorized()) }
+        _state.update { it.copy(isAuthorizedSpotify = spotify.isAuthorized()) }
 
         // Observe local player state and reduce it into UI state
         viewModelScope.launch {
@@ -51,7 +51,7 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.play()
                 } else {
-                    if (state.value.isAuthorized) viewModelScope.launch { spotify.play() }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.play() }
                 }
             }
 
@@ -59,7 +59,7 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.pause()
                 } else {
-                    if (state.value.isAuthorized) viewModelScope.launch { spotify.pause() }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.pause() }
                 }
             }
 
@@ -67,7 +67,7 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.next()
                 } else {
-                    if (state.value.isAuthorized) viewModelScope.launch { spotify.next() }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.next() }
                 }
             }
 
@@ -75,7 +75,7 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.previous()
                 } else {
-                    if (state.value.isAuthorized) viewModelScope.launch { spotify.previous() }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.previous() }
                 }
             }
 
@@ -83,7 +83,7 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.seekTo(event.positionMs)
                 } else {
-                    if (state.value.isAuthorized) viewModelScope.launch { spotify.seekTo(event.positionMs) }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.seekTo(event.positionMs) }
                 }
             }
 
@@ -113,7 +113,7 @@ class MusicPlayerViewModel @Inject constructor(
             // When switching to Spotify page, ensure repo has the latest token and refresh
             spotify.setAccessFromStored()
             val authorized = spotify.isAuthorized()
-            _state.update { it.copy(isAuthorized = authorized) }
+            _state.update { it.copy(isAuthorizedSpotify = authorized) }
             if (authorized) refreshRemote()
         }
     }
@@ -133,7 +133,7 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     private fun checkAuthorization() {
-        _state.update { it.copy(isAuthorized = spotify.isAuthorized()) }
+        _state.update { it.copy(isAuthorizedSpotify = spotify.isAuthorized()) }
     }
 
     // IMPORTANT: pick up new token on resume before checking auth
@@ -142,7 +142,7 @@ class MusicPlayerViewModel @Inject constructor(
         spotify.setAccessFromStored()
 
         val authorized = spotify.isAuthorized()
-        _state.update { it.copy(isAuthorized = authorized) }
+        _state.update { it.copy(isAuthorizedSpotify = authorized) }
         if (authorized) refreshRemote()
     }
 
@@ -158,7 +158,7 @@ class MusicPlayerViewModel @Inject constructor(
                 val msg = t.message.orEmpty()
                 if (msg.contains("401")) {
                     spotify.clearAuthOn401()
-                    _state.update { it.copy(isAuthorized = false, isLoading = false, error = null) }
+                    _state.update { it.copy(isAuthorizedSpotify = false, isLoading = false, error = null) }
                 } else {
                     _state.update { it.copy(isLoading = false, error = msg) }
                 }

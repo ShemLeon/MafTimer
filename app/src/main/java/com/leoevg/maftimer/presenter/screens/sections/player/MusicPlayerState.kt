@@ -1,7 +1,7 @@
 package com.leoevg.maftimer.presenter.screens.sections.player
 
 data class MusicPlayerState (
-    val isAuthorized: Boolean = false,
+    val isAuthorizedSpotify: Boolean = false,
     val artist: String = "singer",
     val title: String = "title",
     val isPlaying: Boolean = true,

@@ -16,7 +16,7 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 fun CoverAlbumImage(state: MusicPlayerState) {
     Image(
         painter = painterResource(
-            if (!state.isAuthorized)
+            if (!state.isAuthorizedSpotify)
                 R.drawable.coverdef
             else R.drawable.muzdef
             // TODO: настроить после активации плеера

@@ -22,9 +22,9 @@ fun TypePlayerImage(
     onEvent: (MusicPlayerEvent) -> Unit,
     onSpotifyAuthRequest: () -> Unit
 ) {
-    val onClick = remember(state.isAuthorized) {
+    val onClick = remember(state.isAuthorizedSpotify) {
         {
-            if (state.isAuthorized) {
+            if (state.isAuthorizedSpotify) {
                 onEvent(MusicPlayerEvent.OnRefreshPlayback)
             } else {
                 onSpotifyAuthRequest()
@@ -52,7 +52,7 @@ fun TypePlayerImage(
 private fun TypePlayerImagePreview() {
     TypePlayerImage(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,

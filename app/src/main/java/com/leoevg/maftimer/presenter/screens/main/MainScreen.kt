@@ -2,7 +2,6 @@ package com.leoevg.maftimer.presenter.screens.main
 
 
 import com.leoevg.maftimer.presenter.util.Logx
-import androidx.compose.foundation.Image
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.foundation.background
@@ -14,16 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-
-import androidx.compose.ui.platform.LocalWindowInfo
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,15 +33,8 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
 
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.DisposableEffect
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
-
-
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.CustomOverlay
-import com.leoevg.maftimer.presenter.screens.sections.player.components.ui.MusicAssembly
-import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayer
 
 private const val TAG = "MainScreen"
 
@@ -60,7 +48,7 @@ fun MainScreen(
     val timerState by timerViewModel.state.collectAsState()
     val musicViewModel: MusicPlayerViewModel = hiltViewModel()
     val musicState by musicViewModel.state.collectAsState()
-    Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorized}")
+    Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorizedSpotify}")
     Logx.debug(TAG, "Music state: $musicState")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -170,7 +158,7 @@ private fun MainScreenPreview() {
         onEvent = { _: MainScreenEvent -> },
         onSpotifyAuthRequest = {},
         musicPlayerState = MusicPlayerState(
-            isAuthorized = false,
+            isAuthorizedSpotify = false,
             artist = "Preview Artist",
             title = "Preview Song",
             isPlaying = false,
@@ -196,7 +184,7 @@ private fun MainScreenWithoutOverlayPreview() {
         onEvent = { _: MainScreenEvent -> },
         onSpotifyAuthRequest = {},
         musicPlayerState = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Preview Artist",
             title = "Preview Song",
             isPlaying = false,
@@ -225,7 +213,7 @@ private fun MainScreenLocalOverlayPreview() {
         onEvent = { _: MainScreenEvent -> },
         onSpotifyAuthRequest = {},
         musicPlayerState = MusicPlayerState(
-            isAuthorized = false,  // Or your condition for local overlay
+            isAuthorizedSpotify = false,  // Or your condition for local overlay
             selectedPage = 0
         ),
         onMusicPlayerEvent = {}

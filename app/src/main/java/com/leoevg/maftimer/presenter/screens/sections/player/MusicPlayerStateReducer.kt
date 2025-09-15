@@ -16,7 +16,7 @@ object MusicPlayerStateReducer {
 
     fun withRemote(prev: MusicPlayerState, rp: RemotePlayback?): MusicPlayerState =
         if (rp == null) prev.copy(
-            isAuthorized = false,
+            isAuthorizedSpotify = false,
             isPlaying = false,
             progressMs = 0,
             durationMs = 0,
@@ -24,7 +24,7 @@ object MusicPlayerStateReducer {
             artist = "",
             albumCoverUrl = ""
         ) else prev.copy(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             isPlaying = rp.isPlaying,
             progressMs = rp.progressMs,
             durationMs = rp.durationMs,

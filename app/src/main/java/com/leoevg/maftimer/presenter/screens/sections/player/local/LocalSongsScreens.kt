@@ -1,7 +1,7 @@
 package com.leoevg.maftimer.presenter.screens.sections.player.local
 
 import android.Manifest
-import android.os.Build
+
 import android.content.ContentUris
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -32,8 +32,7 @@ fun LocalSongsScreen(
     onPick: (List<Song>, Int) -> Unit
 ) {
     val ctx = LocalContext.current
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-        Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE
+    val permission = Manifest.permission.READ_MEDIA_AUDIO
     val permissionState = rememberPermissionState(permission)
     var songs by remember { mutableStateOf<List<Song>>(emptyList()) }
 

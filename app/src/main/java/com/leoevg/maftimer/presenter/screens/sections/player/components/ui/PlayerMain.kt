@@ -97,7 +97,7 @@ fun PlayerMain(
 private fun PlayerMainPreview() {
     PlayerMain(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,
@@ -115,7 +115,7 @@ private fun PlayerMainPreview() {
 private fun PlayerMainLongPreview() {
     PlayerMain(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "ой у вишневому саду там соловейко",
             title = "Balalay",
             isPlaying = false,

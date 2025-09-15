@@ -51,7 +51,7 @@ fun SongInfo(
 private fun SongInfoPreview() {
     SongInfo(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = false,
@@ -66,7 +66,7 @@ private fun SongInfoPreview() {
 private fun SongInfoLongPreview() {
     SongInfo(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "ой у вишневому саду там соловейко",
             title = "Очень длинное название песни которое нужно обрезать",
             isPlaying = false,

@@ -34,8 +34,8 @@ fun MusicPlayer(
     val actualOnEvent = onEvent ?: viewModel?.let { { event -> it.sendEvent(event) } } ?: {}
 
     // Детект свайпа и обновление state
-    LaunchedEffect(actualState.isAuthorized) {
-        if (actualState.isAuthorized && viewModel != null) {
+    LaunchedEffect(actualState.isAuthorizedSpotify) {
+        if (actualState.isAuthorizedSpotify && viewModel != null) {
             viewModel.sendEvent(MusicPlayerEvent.OnRefreshPlayback)
         }
     }
@@ -85,7 +85,7 @@ fun MusicPlayer(
 private fun MusicPlayerSpotifyAuthorizedPreview() {
     MusicPlayer(
         state = MusicPlayerState(
-            isAuthorized = true,
+            isAuthorizedSpotify = true,
             artist = "Ivo Bobul",
             title = "Balalay",
             isPlaying = true,
@@ -103,7 +103,7 @@ private fun MusicPlayerSpotifyAuthorizedPreview() {
 private fun MusicPlayerSpotifyOverlayPreview() {
     MusicPlayer(
         state = MusicPlayerState(
-            isAuthorized = false,
+            isAuthorizedSpotify = false,
             selectedPage = 1
         ),
         onEvent = {},

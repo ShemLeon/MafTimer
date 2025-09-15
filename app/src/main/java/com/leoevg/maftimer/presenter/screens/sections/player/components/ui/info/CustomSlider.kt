@@ -71,7 +71,7 @@ private fun CustomSliderPreview() {
     Row {
         CustomSlider(
             state = MusicPlayerState(
-                isAuthorized = true,
+                isAuthorizedSpotify = true,
                 artist = "Ivo Bobul",
                 title = "Balalay",
                 isPlaying = true,
