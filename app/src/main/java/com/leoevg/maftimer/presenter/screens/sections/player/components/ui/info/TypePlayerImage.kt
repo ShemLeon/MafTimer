@@ -42,7 +42,7 @@ fun TypePlayerImage(
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
         ,
-        contentScale = ContentScale.Crop
+        contentScale = ContentScale.Fit
     )
 
 }
