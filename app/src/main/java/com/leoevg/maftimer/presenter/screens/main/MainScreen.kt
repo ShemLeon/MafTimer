@@ -1,6 +1,5 @@
 package com.leoevg.maftimer.presenter.screens.main
 
-
 import com.leoevg.maftimer.presenter.util.Logx
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -9,9 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,9 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.leoevg.maftimer.navigation.NavigationPaths
 import com.leoevg.maftimer.presenter.screens.sections.timer.TimerViewModel
@@ -32,7 +26,6 @@ import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerEvent
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerState
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayerViewModel
 import com.leoevg.maftimer.presenter.screens.sections.timer.components.TimerAssembly
-
 import androidx.compose.runtime.DisposableEffect
 import com.leoevg.maftimer.presenter.screens.sections.player.MusicPlayer
 
@@ -117,28 +110,17 @@ private fun MainScreenContent(
         Column(
             modifier = Modifier.fillMaxSize(),  // Fixed fillMaxSize to prevent shifting
             horizontalAlignment = Alignment.CenterHorizontally
-
         ) {
             TitleApplication()
             TimerAssembly(state = timerState, onEvent = onTimerEvent)
             Spacer(Modifier.weight(1f))
-        }
-        // Блок для плеера
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(bottom = 30.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
             MusicPlayer(
                 onSpotifyAuthRequest = onSpotifyAuthRequest,
                 state = musicPlayerState,
                 onEvent = onMusicPlayerEvent
             )
-
         }
+
     }
 }
 

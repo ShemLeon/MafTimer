@@ -40,7 +40,6 @@ fun MusicPlayer(
         }
     }
 
-
 // Permission → notify VM once granted (short, Android 13+ only)
     val permissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_AUDIO)
     LaunchedEffect(permissionState.status) {
@@ -51,7 +50,6 @@ fun MusicPlayer(
         }
     }
 
-
     val pagerState = rememberPagerState(initialPage = actualState.selectedPage, pageCount = { 2 })  // 0 = local, 1 = spotify
     // Update selectedPage in ViewModel when page changes
     LaunchedEffect(pagerState) {
@@ -59,11 +57,10 @@ fun MusicPlayer(
             .collectLatest { page -> viewModel?.updateSelectedPage(page) }
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 0.dp),
+            .padding(bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
@@ -80,7 +77,7 @@ fun MusicPlayer(
 
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF333333)
 @Composable
 private fun MusicPlayerSpotifyAuthorizedPreview() {
     MusicPlayer(
@@ -98,7 +95,7 @@ private fun MusicPlayerSpotifyAuthorizedPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF333333)
 @Composable
 private fun MusicPlayerSpotifyOverlayPreview() {
     MusicPlayer(
@@ -111,7 +108,7 @@ private fun MusicPlayerSpotifyOverlayPreview() {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF333333)
 @Composable
 private fun MusicPlayerLocalOverlayPreview() {
     MusicPlayer(
