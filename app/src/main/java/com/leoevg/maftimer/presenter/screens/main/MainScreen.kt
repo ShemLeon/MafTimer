@@ -90,8 +90,15 @@ fun MainScreen(
         onSpotifyAuthRequest = onSpotifyAuthRequest,
         musicPlayerState = musicState,
         onMusicPlayerEvent = { event ->
-            Logx.debug(TAG, "Music event: $event")
-            musicViewModel.sendEvent(event)
+            if (event is MusicPlayerEvent.OnOverlayClicked &&
+                musicState.selectedPage == 0 &&
+                !musicState.isLocalLoaded
+            ) {
+                navigate(NavigationPaths.LocalSongsScreenSealed)
+            } else {
+                Logx.debug(TAG, "Music event: $event")
+                musicViewModel.sendEvent(event)
+            }
         }
     )
 }

@@ -39,10 +39,7 @@ fun MainNavHost(
         composable<NavigationPaths.LocalSongsScreenSealed> {
             LocalSongsScreen(
                 onBack = { navController.popBackStack() },
-                onPick = { _, _ ->
-                    // For now just close the list; hook playback in the next step
-                    navController.popBackStack()
-                }
+                onPick = { _, _ ->  navController.popBackStack()   }
             )
         }
     }
