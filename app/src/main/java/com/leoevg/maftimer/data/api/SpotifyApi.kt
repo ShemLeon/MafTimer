@@ -26,27 +26,3 @@ interface SpotifyApi {
         @Query("position_ms") positionMs: Long
     ): Response<Unit>
 }
-
-
-
-data class SpotifyTrack(
-    val name: String,
-    val artists: List<SpotifyArtist>,
-    val album: SpotifyAlbum,
-    val durationMs: Long
-)
-
-data class SpotifyArtist(
-    val name: String
-)
-
-data class SpotifyAlbum(
-    val name: String,
-    val images: List<SpotifyImage>
-)
-
-data class SpotifyImage(
-    val url: String,
-    val height: Int,
-    val width: Int
-)

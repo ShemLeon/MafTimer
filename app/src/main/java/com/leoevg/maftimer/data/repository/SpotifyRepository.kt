@@ -65,6 +65,9 @@ class SpotifyRepository @Inject constructor(
 
             if (currentState?.isPlaying == true) {
                 Logx.info(TAG, "Музыка уже играет, не нужно делать play")
+                // Добавляем дополнительное обновление состояния
+                Logx.info(TAG, "Принудительно обновляем _playbackState для UI")
+                _playbackState.value = currentState
                 return Result.success(Unit)
             }
 
@@ -75,11 +78,21 @@ class SpotifyRepository @Inject constructor(
 
             if (response.isSuccessful) {
                 Logx.info(TAG, "Play команда успешна")
+
+                // МГНОВЕННО обновляем UI состояние (оптимистично)
+                val currentState = _playbackState.value
+                if (currentState != null) {
+                    val updatedState = currentState.copy(isPlaying = true)
+                    _playbackState.value = updatedState
+                    Logx.info(TAG, "Мгновенно обновили UI: isPlaying=true")
+                }
+
+                // Затем проверяем реальное состояние
+                getCurrentPlayback()
                 Result.success(Unit)
             } else {
                 val errorBody = response.errorBody()?.string()
                 Logx.error(TAG, "Провал play: ${response.code()} - ${response.message()}, тело: $errorBody")
-
                 if (response.code() == 403) {
                     Logx.error(TAG, "Error 403: Музыка уже играет or restricted")
                     // Проверяем еще раз состояние после ошибки
@@ -114,6 +127,16 @@ class SpotifyRepository @Inject constructor(
             Logx.network(TAG, "Pausing…")
             val response = spotifyApi.pausePlayback(getAuthHeader())
             if (response.isSuccessful) {
+                // МГНОВЕННО обновляем UI состояние (оптимистично)
+                val currentState = _playbackState.value
+                if (currentState != null) {
+                    val updatedState = currentState.copy(isPlaying = false)
+                    _playbackState.value = updatedState
+                    Logx.info(TAG, "Мгновенно обновили UI: isPlaying=false")
+                }
+
+                // Затем проверяем реальное состояние
+                getCurrentPlayback()
                 Result.success(Unit)
             } else {
                 Logx.error(TAG, "Ошибка to pause: ${response.code()}")
@@ -134,6 +157,8 @@ class SpotifyRepository @Inject constructor(
             Logx.network(TAG, "Skipping to next…")
             val response = spotifyApi.skipToNext(getAuthHeader())
             if (response.isSuccessful) {
+                // Обновляем состояние после переключения трека
+                getCurrentPlayback()
                 Result.success(Unit)
             } else {
                 Logx.error(TAG, "Failed to skip next: ${response.code()}")
@@ -153,6 +178,8 @@ class SpotifyRepository @Inject constructor(
             Log.d("SpotifyRepository", "Skipping to previous...")
             val response = spotifyApi.skipToPrevious(getAuthHeader())
             if (response.isSuccessful) {
+                // Обновляем состояние после переключения трека
+                getCurrentPlayback()
                 Result.success(Unit)
             } else {
                 Logx.error(TAG, "Failed to skip previous: ${response.code()}")

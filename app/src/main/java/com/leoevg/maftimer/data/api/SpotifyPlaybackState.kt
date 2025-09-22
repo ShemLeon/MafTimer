@@ -11,3 +11,26 @@ data class SpotifyPlaybackState(
 
     val item: SpotifyTrack?
 )
+
+data class SpotifyTrack(
+    val name: String,
+    val artists: List<SpotifyArtist>,
+    val album: SpotifyAlbum,
+    @SerializedName("duration_ms")
+    val durationMs: Long
+)
+
+data class SpotifyArtist(
+    val name: String
+)
+
+data class SpotifyAlbum(
+    val name: String,
+    val images: List<SpotifyImage>
+)
+
+data class SpotifyImage(
+    val url: String,
+    val height: Int,
+    val width: Int
+)
