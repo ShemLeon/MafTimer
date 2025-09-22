@@ -55,16 +55,43 @@ class SpotifyRepository @Inject constructor(
     override suspend fun play(): Result<Unit> {
         return try {
             if (accessToken == null) {
+                Logx.error(TAG, "No access token available for play()")
                 return Result.failure(Exception("No access token"))
             }
 
-            Logx.network(TAG, "Playing…")
+            // Сначала получаем реальное состояние воспроизведения
+            Logx.network(TAG, "Getting current state before play command...")
+            val currentState = getCurrentPlayback().getOrNull()
+
+            if (currentState?.isPlaying == true) {
+                Logx.info(TAG, "Музыка уже играет, не нужно делать play")
+                return Result.success(Unit)
+            }
+
+            Logx.network(TAG, "Проигрывание с токеном: ${accessToken?.take(10)}...")
             val response = spotifyApi.resumePlayback(getAuthHeader())
+
+            Logx.info(TAG, "Play API респонс: код=${response.code()}, successful=${response.isSuccessful}")
+
             if (response.isSuccessful) {
+                Logx.info(TAG, "Play команда успешна")
                 Result.success(Unit)
             } else {
-                Logx.error(TAG, "Failed to play: ${response.code()}")
-                Result.failure(Exception("Failed to play: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                Logx.error(TAG, "Провал play: ${response.code()} - ${response.message()}, тело: $errorBody")
+
+                if (response.code() == 403) {
+                    Logx.error(TAG, "Error 403: Музыка уже играет or restricted")
+                    // Проверяем еще раз состояние после ошибки
+                    val stateAfterError = getCurrentPlayback().getOrNull()
+                    if (stateAfterError?.isPlaying == true) {
+                        Logx.info(TAG, "Music is actually playing despite 403 error")
+                        return Result.success(Unit)
+                    }
+                    Result.failure(Exception("Cannot resume playback - restricted by Spotify"))
+                } else {
+                    Result.failure(Exception("Failed to play: ${response.code()}"))
+                }
             }
         } catch (e: Exception) {
             Logx.error(TAG, "Exception playing", e)
@@ -75,7 +102,13 @@ class SpotifyRepository @Inject constructor(
     override suspend fun pause(): Result<Unit> {
         return try {
             if (accessToken == null) {
-                return Result.failure(Exception("No access token"))
+                return Result.failure(Exception("Нет токена доступа"))
+            }
+            // Проверяем текущее состояние
+            val currentState = getCurrentPlayback().getOrNull()
+            if (currentState?.isPlaying == false) {
+                Logx.info(TAG, "Музыка уже на паузе, no need to pause")
+                return Result.success(Unit)
             }
 
             Logx.network(TAG, "Pausing…")
@@ -83,8 +116,8 @@ class SpotifyRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Logx.error(TAG, "Failed to pause: ${response.code()}")
-                Result.failure(Exception("Failed to pause: ${response.code()}"))
+                Logx.error(TAG, "Ошибка to pause: ${response.code()}")
+                Result.failure(Exception("Ошибка to pause: ${response.code()}"))
             }
         } catch (e: Exception) {
             Logx.error(TAG, "Exception pausing", e)
