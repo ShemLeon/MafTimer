@@ -107,7 +107,7 @@ class SpotifyRepository @Inject constructor(
                 Result.failure(Exception("Failed to skip next: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Logx.network(TAG, "Skipping to previous…")
+            Logx.network(TAG, "Skipping to next failed")
             Result.failure(e)
         }
     }
