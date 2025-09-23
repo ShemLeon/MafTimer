@@ -229,7 +229,8 @@ class MusicPlayerViewModel @Inject constructor(
                         it.copy(
                             isAuthorizedSpotify = false,
                             isLoading = false,
-                            error = null
+                            error = null,
+                            showSpotifyOverlay = true  // Показать оверлей если токен недействителен
                         )
                     }
                 } else {

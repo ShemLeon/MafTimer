@@ -52,9 +52,11 @@ fun MainScreen(
                 Lifecycle.Event.ON_PAUSE,
                 Lifecycle.Event.ON_STOP,
                 Lifecycle.Event.ON_DESTROY -> {
-                    // Show overlays только если не возвращаемся из Spotify
-                    if (!musicState.spotIntentActivated) {
+                    // НЕ показывать оверлеи если авторизован в Spotify
+                    if (!musicState.isAuthorizedSpotify || musicState.selectedPage != 1) {
                         musicViewModel.showAllOverlays()
+                    } else {
+                        Logx.info(TAG, "🚫 Skipping showAllOverlays - user is authorized in Spotify")
                     }
                 }
 
