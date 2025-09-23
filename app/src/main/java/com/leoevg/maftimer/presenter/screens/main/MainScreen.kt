@@ -41,15 +41,38 @@ fun MainScreen(
     val timerState by timerViewModel.state.collectAsState()
     val musicViewModel: MusicPlayerViewModel = hiltViewModel()
     val musicState by musicViewModel.state.collectAsState()
-    Logx.info(TAG, "Music state updated: isAuthorized=${musicState.isAuthorizedSpotify}")
+    Logx.info(TAG, "Music state: isAuth=${musicState.isAuthorizedSpotify}, spotIntent=${musicState.spotIntentActivated}, showOverlay=${musicState.showSpotifyOverlay}, page=${musicState.selectedPage}")
     Logx.debug(TAG, "Music state: $musicState")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
+            when (event) {
+                Lifecycle.Event.ON_CREATE,
+                Lifecycle.Event.ON_PAUSE,
+                Lifecycle.Event.ON_STOP,
+                Lifecycle.Event.ON_DESTROY -> {
+                    // Show overlays только если не возвращаемся из Spotify
+                    if (!musicState.spotIntentActivated) {
+                        musicViewModel.showAllOverlays()
+                    }
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    Logx.info(TAG, "🔄 ON_RESUME: spotIntent=${musicState.spotIntentActivated}, page=${musicState.selectedPage}, showOverlay=${musicState.showSpotifyOverlay}")
+                    musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
+                    if (musicState.spotIntentActivated && musicState.selectedPage == 1) {
+                        Logx.success(TAG, "✅ Hiding Spotify overlay - conditions met")
+                        musicViewModel.hideAllOverlays()
+                    } else {
+                        Logx.warn(TAG, "❌ NOT hiding overlay - spotIntent=${musicState.spotIntentActivated}, page=${musicState.selectedPage}")
+                    }
+                }
+
+                else -> {}     // Handle other lifecycle events
+
             }
+
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -68,7 +91,11 @@ fun MainScreen(
         timerState = timerState,
         onTimerEvent = timerViewModel::onEvent,
         onEvent = viewModel::onEvent,
-        onSpotifyAuthRequest = onSpotifyAuthRequest,
+        onSpotifyAuthRequest = {
+            Logx.action(TAG, "🎵 Spotify auth request - setting spotIntentActivated=true")
+            musicViewModel.setSpotifyIntentActivated(true)
+            onSpotifyAuthRequest()
+        },
         musicPlayerState = musicState,
         onMusicPlayerEvent = { event ->
             if (event is MusicPlayerEvent.OnOverlayClicked &&

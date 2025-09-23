@@ -14,12 +14,18 @@ fun MusicAssembly(
     onSpotifyAuthRequest: () -> Unit
 ) {
     val isLocal = state.selectedPage == 0
-    if  ((isLocal && state.isLocalLoaded) || (!isLocal && state.isAuthorizedSpotify)) {
+    if (
+        (isLocal && state.isLocalLoaded)
+        || (!isLocal
+                && state.isAuthorizedSpotify
+                && !state.showSpotifyOverlay)
+    ) {
         PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
     } else {
         CustomOverlay(
             onClick = {
-                if (isLocal) onEvent(MusicPlayerEvent.OnOverlayClicked) else onSpotifyAuthRequest()
+                if (isLocal) onEvent(MusicPlayerEvent.OnOverlayClicked)
+                else onSpotifyAuthRequest()
             },
             state = state
         )

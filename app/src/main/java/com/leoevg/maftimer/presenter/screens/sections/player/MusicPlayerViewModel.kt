@@ -6,6 +6,7 @@ import com.leoevg.maftimer.presenter.screens.sections.player.local.ILocalPlayerC
 import com.leoevg.maftimer.presenter.screens.sections.player.local.LocalPlayback
 import com.leoevg.maftimer.presenter.screens.sections.player.spotify.ISpotifyPlaybackController
 import com.leoevg.maftimer.presenter.screens.sections.player.spotify.RemotePlayback
+import com.leoevg.maftimer.presenter.util.Logx
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -31,7 +32,13 @@ class MusicPlayerViewModel @Inject constructor(
     init {
         // Restore token to repository and set initial auth flag
         spotify.setAccessFromStored()
-        _state.update { it.copy(isAuthorizedSpotify = spotify.isAuthorized()) }
+        val authorized = spotify.isAuthorized()
+        _state.update {
+            it.copy(
+                isAuthorizedSpotify = authorized,
+                showSpotifyOverlay = !authorized  // Показывать оверлей только если НЕ авторизован
+            )
+        }
 
         // Observe local player state and reduce it into UI state
         viewModelScope.launch {
@@ -83,7 +90,11 @@ class MusicPlayerViewModel @Inject constructor(
                 if (isLocalPage) {
                     if (state.value.isLocalLoaded) local.seekTo(event.positionMs)
                 } else {
-                    if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.seekTo(event.positionMs) }
+                    if (state.value.isAuthorizedSpotify) viewModelScope.launch {
+                        spotify.seekTo(
+                            event.positionMs
+                        )
+                    }
                 }
             }
 
@@ -96,7 +107,15 @@ class MusicPlayerViewModel @Inject constructor(
             }
 
             is MusicPlayerEvent.OnOverlayClicked -> {
-                if (!isLocalPage) spotify.openSpotifyApp()
+                if (!isLocalPage) {
+                    spotify.openSpotifyApp()
+                    _state.update {
+                        it.copy(
+                            showSpotifyOverlay = false,
+                            spotIntentActivated = true
+                        )
+                    }
+                }
             }
 
             is MusicPlayerEvent.OnCheckAuthorization -> {
@@ -121,6 +140,47 @@ class MusicPlayerViewModel @Inject constructor(
     // Called by UI after Android 13+ READ_MEDIA_AUDIO is granted
     fun onLocalPermissionGranted() {
         viewModelScope.launch { local.initLibrary() }
+    }
+
+    fun hideAllOverlays() {
+        Logx.info("MusicPlayerViewModel", "Hiding ALL overlays and resetting spotIntentActivated")
+        _state.update {
+            it.copy(
+                showSpotifyOverlay = false,
+                showLocalOverlay = false,
+                spotIntentActivated = false
+            )
+        }
+        // Принудительно проверяем авторизацию после скрытия оверлея
+        checkAuthorizationAndMaybeRefresh()
+    }
+
+    fun hideSpotifyOverlayOnly() {
+        Logx.info("MusicPlayerViewModel", "Hiding Spotify overlay only, keeping spotIntentActivated")
+        _state.update {
+            it.copy(
+                showSpotifyOverlay = false
+                // НЕ сбрасываем spotIntentActivated!
+            )
+        }
+    }
+
+    fun showAllOverlays() {
+        val trace = Thread.currentThread().stackTrace
+        val caller = trace.getOrNull(3)?.let { "${it.className}.${it.methodName}:${it.lineNumber}" } ?: "unknown"
+        Logx.info("MusicPlayerViewModel", "🚨 showAllOverlays() called from: $caller")
+        _state.update {
+            it.copy(
+                showSpotifyOverlay = if (it.isAuthorizedSpotify && it.selectedPage == 1) false else true,
+                showLocalOverlay = true
+                // НЕ сбрасываем spotIntentActivated здесь!
+            )
+        }
+    }
+
+    fun setSpotifyIntentActivated(activated: Boolean) {
+        Logx.info("MusicPlayerViewModel", "🏷️ Setting spotIntentActivated=$activated")
+        _state.update { it.copy(spotIntentActivated = activated) }
     }
 
     // Optional: keeps overlay logic backward compatible; reducer will overwrite when local becomes ready
@@ -148,17 +208,30 @@ class MusicPlayerViewModel @Inject constructor(
 
     private fun refreshRemote() {
         viewModelScope.launch {
+            Logx.debug("MusicPlayerViewModel", "🔄 refreshRemote() started")
             _state.update { it.copy(isLoading = true) }
             val result = spotify.getPlayback()
             result.onSuccess { rp: RemotePlayback? ->
+                Logx.debug("MusicPlayerViewModel", "✅ refreshRemote() success - preserving overlay state")
+                val currentOverlayState = _state.value.showSpotifyOverlay
+                val currentSpotIntentState = _state.value.spotIntentActivated
                 _state.update { st ->
-                    MusicPlayerStateReducer.withRemote(st.copy(isLoading = false, error = null), rp)
+                    MusicPlayerStateReducer.withRemote(st.copy(isLoading = false, error = null), rp).copy(
+                        showSpotifyOverlay = currentOverlayState,
+                        spotIntentActivated = currentSpotIntentState
+                    )
                 }
             }.onFailure { t ->
                 val msg = t.message.orEmpty()
                 if (msg.contains("401")) {
                     spotify.clearAuthOn401()
-                    _state.update { it.copy(isAuthorizedSpotify = false, isLoading = false, error = null) }
+                    _state.update {
+                        it.copy(
+                            isAuthorizedSpotify = false,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
                 } else {
                     _state.update { it.copy(isLoading = false, error = msg) }
                 }
