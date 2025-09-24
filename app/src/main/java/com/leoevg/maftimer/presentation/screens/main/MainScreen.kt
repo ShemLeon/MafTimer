@@ -31,7 +31,6 @@ private const val TAG = "MainScreen"
 @Composable
 fun MainScreen(
     navigate: (NavigationPaths) -> Unit,
-    viewModel: MainScreenViewModel = hiltViewModel(),
     timerViewModel: TimerViewModel = hiltViewModel()
 ) {
     val timerState by timerViewModel.state.collectAsState()
