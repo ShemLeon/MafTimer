@@ -32,6 +32,7 @@ class MusicPlayerViewModel @Inject constructor(
 
     // Periodic pull for local progress to keep UI smooth
     private var localProgressJob: Job? = null
+    private var remoteRefreshJob: Job? = null
 
     init {
         // Restore token to repository and set initial auth flag
@@ -247,6 +248,22 @@ class MusicPlayerViewModel @Inject constructor(
                 }
             }
         }
+        startAutoRefresh()
+    }
+
+    fun startAutoRefresh() {
+        if (remoteRefreshJob != null) return
+        remoteRefreshJob = viewModelScope.launch {
+            while (true) {
+                delay(1000L)
+                refreshRemote()
+            }
+        }
+    }
+
+    fun stopAutoRefresh() {
+        remoteRefreshJob?.cancel()
+        remoteRefreshJob = null
     }
 
     private fun toggleLocalProgressJob(lp: LocalPlayback) {
@@ -266,6 +283,7 @@ class MusicPlayerViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         localProgressJob?.cancel()
+        stopAutoRefresh()
         local.release()
     }
 

@@ -26,6 +26,8 @@ import com.leoevg.maftimer.presentation.navigation.NavigationPaths
 import com.leoevg.maftimer.presentation.screens.sections.player.components.ui.MusicAssembly
 import com.leoevg.maftimer.presentation.screens.sections.timer.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presentation.util.Logx
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private const val TAG = "MusicPlayerComposable"
 
@@ -52,14 +54,6 @@ fun MusicPlayer(
 
     Logx.info(TAG, "Music state: isAuth=${musicState.isAuthorizedSpotify}, spotIntent=${musicState.spotIntentActivated}, showOverlay=${musicState.showSpotifyOverlay}, page=${musicState.selectedPage}")
     Logx.debug(TAG, "Music state: $musicState")
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(1000)
-            Logx.debug(TAG, "Periodic check → checking authorization")
-            viewModel.refreshRemote()
-        }
-    }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
