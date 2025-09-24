@@ -14,20 +14,25 @@ fun MusicAssembly(
     onSpotifyAuthRequest: () -> Unit
 ) {
     val isLocal = state.selectedPage == 0
-    if (
-        (isLocal && state.isLocalLoaded)
-        || (!isLocal
-                && state.isAuthorizedSpotify
-                && !state.showSpotifyOverlay)
-    ) {
-        PlayerMain(state = state, onEvent = onEvent, onSpotifyAuthRequest = onSpotifyAuthRequest)
+    val shouldShowOverlay = if (isLocal) {
+        !state.isAuthorizedLocal || state.showOverlayLocal
     } else {
+        !state.isAuthorizedSpotify || state.showOverlaySpotify
+    }
+
+    if (shouldShowOverlay) {
         CustomOverlay(
             onClick = {
                 if (isLocal) onEvent(MusicPlayerEvent.OnOverlayClicked)
                 else onSpotifyAuthRequest()
             },
             state = state
+        )
+    } else {
+        PlayerMain(
+            state = state,
+            onEvent = onEvent,
+            onSpotifyAuthRequest = onSpotifyAuthRequest
         )
     }
 }
@@ -38,7 +43,7 @@ private fun MusicAssemblyLocalOverlayPreview() {
     MusicAssembly(
         state = MusicPlayerState(
             isAuthorizedSpotify = false,
-            isLocalLoaded = false,  // Not loaded - show local overlay
+            isAuthorizedLocal = false,  // Not loaded - show local overlay
             selectedPage = 0
         ),
         onEvent = {},
@@ -82,7 +87,7 @@ private fun MusicAssemblyAuthorizedPreview() {
 private fun MusicAssemblyLocalLoadedPreview() {
     MusicAssembly(
         state = MusicPlayerState(
-            isLocalLoaded = true,  // Loaded - show PlayerMain for local
+            isAuthorizedLocal = true,  // Loaded - show PlayerMain for local
             artist = "Local Artist",
             title = "Local Song",
             isPlaying = true,

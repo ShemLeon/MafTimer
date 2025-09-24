@@ -26,8 +26,6 @@ import com.leoevg.maftimer.presentation.navigation.NavigationPaths
 import com.leoevg.maftimer.presentation.screens.sections.player.components.ui.MusicAssembly
 import com.leoevg.maftimer.presentation.screens.sections.timer.components.TypeOfPlayerIndicators
 import com.leoevg.maftimer.presentation.util.Logx
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 private const val TAG = "MusicPlayerComposable"
 
@@ -43,7 +41,7 @@ fun MusicPlayer(
     val onEvent = { event: MusicPlayerEvent ->
         if (event is MusicPlayerEvent.OnOverlayClicked &&
             musicState.selectedPage == 0 &&
-            !musicState.isLocalLoaded
+            !musicState.isAuthorizedLocal
         ) {
             navigate(NavigationPaths.LocalSongsScreenSealed)
         } else {
@@ -52,7 +50,7 @@ fun MusicPlayer(
         }
     }
 
-    Logx.info(TAG, "Music state: isAuth=${musicState.isAuthorizedSpotify}, spotIntent=${musicState.spotIntentActivated}, showOverlay=${musicState.showSpotifyOverlay}, page=${musicState.selectedPage}")
+    Logx.info(TAG, "Music state: isAuth=${musicState.isAuthorizedSpotify}, spotIntent=${musicState.spotIntentActivated}, showOverlay=${musicState.showOverlaySpotify}, page=${musicState.selectedPage}")
     Logx.debug(TAG, "Music state: $musicState")
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -72,7 +70,7 @@ fun MusicPlayer(
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    Logx.info(TAG, "🔄 ON_RESUME: spotIntent=${musicState.spotIntentActivated}, page=${musicState.selectedPage}, showOverlay=${musicState.showSpotifyOverlay}")
+                    Logx.info(TAG, "🔄 ON_RESUME: spotIntent=${musicState.spotIntentActivated}, page=${musicState.selectedPage}, showOverlay=${musicState.showOverlaySpotify}")
                     viewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
                     if (musicState.spotIntentActivated && musicState.selectedPage == 1) {
                         Logx.success(TAG, "✅ Hiding Spotify overlay - conditions met")

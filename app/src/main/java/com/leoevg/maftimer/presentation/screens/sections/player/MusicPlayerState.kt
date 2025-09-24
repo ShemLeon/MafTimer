@@ -1,12 +1,12 @@
 package com.leoevg.maftimer.presentation.screens.sections.player
 
 data class MusicPlayerState (
-    val isAuthorizedSpotify: Boolean = false,
     val isPlaying: Boolean = true,
     val selectedPage: Int = 1,           // 0 = Local, 1 = spotify
-    val isLocalLoaded: Boolean = false,  // false -> show local overlay, true -> show local overlay
-    val showSpotifyOverlay: Boolean = true, // управляет видимостью Spotify оверлея
-    val showLocalOverlay: Boolean = true, // управляет видимостью Spotify оверлея
+    val isAuthorizedSpotify: Boolean = false,
+    val isAuthorizedLocal: Boolean = false,
+    val showOverlaySpotify: Boolean = true, // управляет видимостью Spotify оверлея
+    val showOverlayLocal: Boolean = true, // управляет видимостью Spotify оверлея
     val spotIntentActivated: Boolean = false, // отслеживает запуск Spotify через интент
 
     val artist: String = "singer",

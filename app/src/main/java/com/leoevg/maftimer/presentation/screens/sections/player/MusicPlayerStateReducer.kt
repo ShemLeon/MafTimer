@@ -6,7 +6,7 @@ import com.leoevg.maftimer.presentation.screens.sections.player.spotify.RemotePl
 object MusicPlayerStateReducer {
     fun withLocal(prev: MusicPlayerState, lp: LocalPlayback): MusicPlayerState =
         prev.copy(
-            isLocalLoaded = lp.isReady,
+            isAuthorizedLocal = lp.isReady,
             isPlaying = lp.isPlaying,
             progressMs = lp.positionMs,
             durationMs = lp.durationMs,

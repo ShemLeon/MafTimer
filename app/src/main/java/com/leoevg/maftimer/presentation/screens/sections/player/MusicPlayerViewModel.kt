@@ -38,11 +38,12 @@ class MusicPlayerViewModel @Inject constructor(
         // Restore token to repository and set initial auth flag
         spotify.setAccessFromStored()
         val authorized = spotify.isAuthorized()
+
         _state.update {
             it.copy(
                 isAuthorizedSpotify = authorized,
-                showSpotifyOverlay = true,  // Показывать оверлей только если НЕ авторизован
-                showLocalOverlay = true
+                showOverlaySpotify = true,
+                showOverlayLocal = true
             )
         }
 
@@ -57,6 +58,20 @@ class MusicPlayerViewModel @Inject constructor(
         spotifyAuthManager.onTokenReceived = { token ->
             Logx.success(TAG, "Token received: ${token.take(10)}...")
             spotifyRepository.setAccessToken(token)
+
+            // Обновляем состояние авторизации и скрываем оверлей
+            _state.update {
+                it.copy(
+                    isAuthorizedSpotify = true,
+                    showOverlaySpotify = false,
+                    spotIntentActivated = true
+                )
+            }
+
+            // Обновляем данные воспроизведения
+            viewModelScope.launch {
+                refreshRemote()
+            }
         }
     }
 
@@ -67,7 +82,7 @@ class MusicPlayerViewModel @Inject constructor(
 
             is MusicPlayerEvent.OnStartBtnClicked -> {
                 if (isLocalPage) {
-                    if (state.value.isLocalLoaded) local.play()
+                    if (state.value.isAuthorizedLocal) local.play()
                 } else {
                     if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.play() }
                 }
@@ -75,7 +90,7 @@ class MusicPlayerViewModel @Inject constructor(
 
             is MusicPlayerEvent.OnPauseBtnClicked -> {
                 if (isLocalPage) {
-                    if (state.value.isLocalLoaded) local.pause()
+                    if (state.value.isAuthorizedLocal) local.pause()
                 } else {
                     if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.pause() }
                 }
@@ -83,7 +98,7 @@ class MusicPlayerViewModel @Inject constructor(
 
             is MusicPlayerEvent.OnNextSongBtnClicked -> {
                 if (isLocalPage) {
-                    if (state.value.isLocalLoaded) local.next()
+                    if (state.value.isAuthorizedLocal) local.next()
                 } else {
                     if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.next() }
                 }
@@ -91,7 +106,7 @@ class MusicPlayerViewModel @Inject constructor(
 
             is MusicPlayerEvent.OnPreviousSongBtnClicked -> {
                 if (isLocalPage) {
-                    if (state.value.isLocalLoaded) local.previous()
+                    if (state.value.isAuthorizedLocal) local.previous()
                 } else {
                     if (state.value.isAuthorizedSpotify) viewModelScope.launch { spotify.previous() }
                 }
@@ -99,7 +114,7 @@ class MusicPlayerViewModel @Inject constructor(
 
             is MusicPlayerEvent.OnSeekTo -> {
                 if (isLocalPage) {
-                    if (state.value.isLocalLoaded) local.seekTo(event.positionMs)
+                    if (state.value.isAuthorizedLocal) local.seekTo(event.positionMs)
                 } else {
                     if (state.value.isAuthorizedSpotify) viewModelScope.launch {
                         spotify.seekTo(
@@ -122,14 +137,18 @@ class MusicPlayerViewModel @Inject constructor(
                     spotify.openSpotifyApp()
                     _state.update {
                         it.copy(
-                            showSpotifyOverlay = false,
+                            showOverlaySpotify = false,
                             spotIntentActivated = true
                         )
                     }
+                    Logx.debug(TAG, "OnOverlayClicked → spotify overlay=${state.value.showOverlaySpotify}, local=${state.value.showOverlayLocal}, spotIntent=${state.value.spotIntentActivated}")
                 } else {
                     // For local page, close local overlay
                     _state.update {
-                        it.copy(showLocalOverlay = false)
+                        it.copy(
+                            isAuthorizedLocal = true,
+                            showOverlayLocal = false
+                        )
                     }
                 }
             }
@@ -142,12 +161,13 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun updateSelectedPage(newPage: Int) {
         _state.update { it.copy(selectedPage = newPage) }
-
         // после свайпа - все оверлеи активны
         _state.update {
             it.copy(
-                showSpotifyOverlay = true,
-                showLocalOverlay = true
+                showOverlaySpotify = true,
+                showOverlayLocal = true,
+                isAuthorizedLocal = false,
+                isAuthorizedSpotify = false
             )
         }
 
@@ -171,8 +191,8 @@ class MusicPlayerViewModel @Inject constructor(
         Logx.info("MusicPlayerViewModel", "Hiding ALL overlays and resetting spotIntentActivated")
         _state.update {
             it.copy(
-                showSpotifyOverlay = false,
-                showLocalOverlay = false,
+                showOverlaySpotify = false,
+                showOverlayLocal = false,
                 spotIntentActivated = false
             )
         }
@@ -187,7 +207,7 @@ class MusicPlayerViewModel @Inject constructor(
         )
         _state.update {
             it.copy(
-                showSpotifyOverlay = false
+                showOverlaySpotify = false
                 // НЕ сбрасываем spotIntentActivated!
             )
         }
@@ -200,8 +220,8 @@ class MusicPlayerViewModel @Inject constructor(
         Logx.info("MusicPlayerViewModel", "🚨 showAllOverlays() called from: $caller")
         _state.update {
             it.copy(
-                showSpotifyOverlay = if (it.isAuthorizedSpotify && it.selectedPage == 1) false else true,
-                showLocalOverlay = true
+                showOverlaySpotify = if (it.isAuthorizedSpotify && it.selectedPage == 1) false else true,
+                showOverlayLocal = true
                 // НЕ сбрасываем spotIntentActivated здесь!
             )
         }
@@ -214,7 +234,7 @@ class MusicPlayerViewModel @Inject constructor(
 
     // Optional: keeps overlay logic backward compatible; reducer will overwrite when local becomes ready
     fun setLocalLoaded(loaded: Boolean) {
-        _state.update { it.copy(isLocalLoaded = loaded) }
+        _state.update { it.copy(isAuthorizedLocal = loaded) }
     }
 
     fun clearError() {
@@ -245,12 +265,12 @@ class MusicPlayerViewModel @Inject constructor(
                     "MusicPlayerViewModel",
                     "✅ refreshRemote() success - preserving overlay state"
                 )
-                val currentOverlayState = _state.value.showSpotifyOverlay
+                val currentOverlayState = _state.value.showOverlaySpotify
                 val currentSpotIntentState = _state.value.spotIntentActivated
                 _state.update { st ->
                     MusicPlayerStateReducer.withRemote(st.copy(isLoading = false, error = null), rp)
                         .copy(
-                            showSpotifyOverlay = currentOverlayState,
+                            showOverlaySpotify = currentOverlayState,
                             spotIntentActivated = currentSpotIntentState
                         )
                 }
@@ -263,7 +283,7 @@ class MusicPlayerViewModel @Inject constructor(
                             isAuthorizedSpotify = false,
                             isLoading = false,
                             error = null,
-                            showSpotifyOverlay = true  // Показать оверлей если токен недействителен
+                            showOverlaySpotify = true  // Показать оверлей если токен недействителен
                         )
                     }
                 } else {
