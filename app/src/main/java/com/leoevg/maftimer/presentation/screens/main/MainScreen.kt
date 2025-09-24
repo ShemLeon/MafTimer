@@ -1,8 +1,9 @@
 package com.leoevg.maftimer.presentation.screens.main
 
-import com.leoevg.maftimer.presentation.util.Logx
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.ui.unit.dp
+import com.leoevg.maftimer.presentation.screens.sections.player.MusicPlayerState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,15 +36,6 @@ fun MainScreen(
 ) {
     val timerState by timerViewModel.state.collectAsState()
 
-//// Принудительная проверка каждые 3 секунды
-//    LaunchedEffect(Unit) {
-//        while (true) {
-//            kotlinx.coroutines.delay(3000)
-//            Logx.debug(TAG, "Periodic check → checking authorization")
-//            musicViewModel.sendEvent(MusicPlayerEvent.OnCheckAuthorization)
-//        }
-//    }
-
     MainScreenContent(
         timerState = timerState,
         onTimerEvent = timerViewModel::onEvent,
@@ -57,8 +49,9 @@ private fun MainScreenContent(
     onTimerEvent: (TimerEvent) -> Unit,
     navigate: (NavigationPaths) -> Unit
 ) {
-    val topGradientColor = Color(0xFF3B3736)    // более светлый оттенок (сверху)
-    val bottomGradientColor = Color(0xFF292625) // более темный оттенок (снизу)
+    val topGradientColor = Color(0xFF111827)    // gray-900 (from)
+    val middleGradientColor = Color(0xFF1F2937) // gray-800 (via)
+    val bottomGradientColor = Color(0xFF111827) // gray-900 (to)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -66,6 +59,7 @@ private fun MainScreenContent(
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         topGradientColor,
+                        middleGradientColor,
                         bottomGradientColor
                     )
                 )
@@ -99,6 +93,7 @@ private fun MainScreenPreview() {
         navigate = {}
     )
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -134,3 +129,5 @@ private fun MainScreenLocalOverlayPreview() {
         navigate = {}
     )
 }
+
+
