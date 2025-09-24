@@ -41,7 +41,8 @@ class MusicPlayerViewModel @Inject constructor(
         _state.update {
             it.copy(
                 isAuthorizedSpotify = authorized,
-                showSpotifyOverlay = !authorized  // Показывать оверлей только если НЕ авторизован
+                showSpotifyOverlay = true,  // Показывать оверлей только если НЕ авторизован
+                showLocalOverlay = true
             )
         }
 
@@ -125,6 +126,11 @@ class MusicPlayerViewModel @Inject constructor(
                             spotIntentActivated = true
                         )
                     }
+                } else {
+                    // For local page, close local overlay
+                    _state.update {
+                        it.copy(showLocalOverlay = false)
+                    }
                 }
             }
 
@@ -136,6 +142,15 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun updateSelectedPage(newPage: Int) {
         _state.update { it.copy(selectedPage = newPage) }
+
+        // после свайпа - все оверлеи активны
+        _state.update {
+            it.copy(
+                showSpotifyOverlay = true,
+                showLocalOverlay = true
+            )
+        }
+
         if (newPage == 0) {
             local.refresh()
         } else {
@@ -166,7 +181,10 @@ class MusicPlayerViewModel @Inject constructor(
     }
 
     fun hideSpotifyOverlayOnly() {
-        Logx.info("MusicPlayerViewModel", "Hiding Spotify overlay only, keeping spotIntentActivated")
+        Logx.info(
+            "MusicPlayerViewModel",
+            "Hiding Spotify overlay only, keeping spotIntentActivated"
+        )
         _state.update {
             it.copy(
                 showSpotifyOverlay = false
@@ -177,7 +195,8 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun showAllOverlays() {
         val trace = Thread.currentThread().stackTrace
-        val caller = trace.getOrNull(3)?.let { "${it.className}.${it.methodName}:${it.lineNumber}" } ?: "unknown"
+        val caller = trace.getOrNull(3)?.let { "${it.className}.${it.methodName}:${it.lineNumber}" }
+            ?: "unknown"
         Logx.info("MusicPlayerViewModel", "🚨 showAllOverlays() called from: $caller")
         _state.update {
             it.copy(
@@ -222,14 +241,18 @@ class MusicPlayerViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             val result = spotify.getPlayback()
             result.onSuccess { rp: RemotePlayback? ->
-                Logx.debug("MusicPlayerViewModel", "✅ refreshRemote() success - preserving overlay state")
+                Logx.debug(
+                    "MusicPlayerViewModel",
+                    "✅ refreshRemote() success - preserving overlay state"
+                )
                 val currentOverlayState = _state.value.showSpotifyOverlay
                 val currentSpotIntentState = _state.value.spotIntentActivated
                 _state.update { st ->
-                    MusicPlayerStateReducer.withRemote(st.copy(isLoading = false, error = null), rp).copy(
-                        showSpotifyOverlay = currentOverlayState,
-                        spotIntentActivated = currentSpotIntentState
-                    )
+                    MusicPlayerStateReducer.withRemote(st.copy(isLoading = false, error = null), rp)
+                        .copy(
+                            showSpotifyOverlay = currentOverlayState,
+                            spotIntentActivated = currentSpotIntentState
+                        )
                 }
             }.onFailure { t ->
                 val msg = t.message.orEmpty()
@@ -255,7 +278,7 @@ class MusicPlayerViewModel @Inject constructor(
         if (remoteRefreshJob != null) return
         remoteRefreshJob = viewModelScope.launch {
             while (true) {
-                delay(1000L)
+                delay(400L)
                 refreshRemote()
             }
         }
