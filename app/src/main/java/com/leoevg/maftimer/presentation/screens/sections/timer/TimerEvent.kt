@@ -1,0 +1,9 @@
+package com.leoevg.maftimer.presentation.screens.sections.timer
+
+sealed interface TimerEvent {
+    object OnStartClick: TimerEvent
+    object OnResetClick: TimerEvent
+    object OnPauseClick: TimerEvent
+    object OnResumeClick: TimerEvent
+    object OnTap : TimerEvent
+}

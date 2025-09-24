@@ -1,6 +1,6 @@
 package com.leoevg.maftimer.domain.usecase
 
-import com.leoevg.maftimer.presenter.util.SpotifyAuthManager
+import com.leoevg.maftimer.presentation.util.SpotifyAuthManager
 import javax.inject.Inject
 
 class CheckAuthorizationUseCase @Inject constructor(

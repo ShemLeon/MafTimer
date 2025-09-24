@@ -1,6 +1,6 @@
 package com.leoevg.maftimer.data.repository
 
-import com.leoevg.maftimer.presenter.util.Logx
+import com.leoevg.maftimer.presentation.util.Logx
 import android.util.Log
 import com.leoevg.maftimer.data.api.SpotifyApi
 import com.leoevg.maftimer.data.api.SpotifyPlaybackState
