@@ -1,5 +1,6 @@
 package com.leoevg.maftimer.presentation.screens.sections.timer.components
 
+import androidx.compose.foundation.background
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -7,9 +8,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -34,16 +38,33 @@ fun TimerAssembly(
             .fillMaxWidth(0.9f)
             .aspectRatio(1f)
     ) {
-        CustomCircle(
-            color = Color.White,
-            diameterFraction = 1f
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .shadow(
+                    elevation = 6.dp,
+                    shape = CircleShape,
+                    ambientColor = Color.Black.copy(alpha = 0.15f),
+                    spotColor = Color.Black.copy(alpha = 0.1f)
+                )
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFF404A57), // Внешний цвет
+                            Color(0xFF3A4351)  // Внутренний цвет
+                        ),
+                        radius = 0.5f
+                    ),
+                    shape = CircleShape
+                )
         )
         ProgressBar(
             percentage = state.progressFraction, // сектор от 60
             number = 60,           // текст внутри = seconds
             color = Color(0x8078F900),
             animDuration = 100, // 10 секунд.
-            strokeWidth = 12.dp
+            strokeWidth = 30.dp
         )
         // Main Button
         Box(
