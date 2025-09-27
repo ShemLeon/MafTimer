@@ -21,11 +21,11 @@ fun MainTimerButton(
     Icon(
         painter = painterResource(
             id = if (state.isRunning) R.drawable.btn_renew
-            else if (state.isPaused) R.drawable.btn_pause
-            else R.drawable.btn_start
+            else if (state.isPaused) R.drawable.btn_pause_whole
+            else R.drawable.btn_start_white
         ),
         contentDescription = if (state.isRunning) "Renew" else "Start",
-        tint = Color.Black,
+        tint = Color.White,
         modifier = Modifier
             .fillMaxSize(0.45f)
             .offset(
@@ -36,7 +36,7 @@ fun MainTimerButton(
     )
 }
 
-@Preview(showBackground = true, name = "Start State")
+@Preview(showBackground = true, name = "Start State", backgroundColor = 0xFF333333L)
 @Composable
 private fun MainTimerButtonStartPreview() {
     MainTimerButton(
@@ -50,7 +50,7 @@ private fun MainTimerButtonStartPreview() {
 }
 
 
-@Preview(showBackground = true, name = "Running State")
+@Preview(showBackground = true, name = "Running State", backgroundColor = 0xFF333333L)
 @Composable
 private fun MainTimerButtonRunningPreview() {
     MainTimerButton(
@@ -63,7 +63,7 @@ private fun MainTimerButtonRunningPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Paused State")
+@Preview(showBackground = true, name = "Paused State", backgroundColor = 0xFF333333L)
 @Composable
 private fun MainTimerButtonPausedPreview() {
     MainTimerButton(
